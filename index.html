@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>夜の学校からの脱出 | 2人協力謎解きゲーム</title>
+  <meta name="description" content="夜の学校を舞台にした2人協力型脱出ゲーム。お互いの画面の情報を共有し、協力して謎を解き明かそう。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 霧のエフェクト（全画面共通） -->
+  <div class="fog-container">
+    <div class="fog-layer fog-layer-1"></div>
+    <div class="fog-layer fog-layer-2"></div>
+  </div>
+
+  <div id="app">
+
+    <!-- 1. タイトル画面 -->
+    <section id="title-screen" class="screen active">
+      <div class="overlay"></div>
+      <div class="title-container">
+        <div class="title-logo">
+          <h1 class="game-title" id="game-title-text">夜の学校からの脱出</h1>
+        </div>
+        <button class="btn-start" id="btn-start-game">探索を開始する</button>
+      </div>
+    </section>
+
+    <!-- 2. ルート選択画面 -->
+    <section id="selection-screen" class="screen">
+      <div class="overlay"></div>
+      <header class="selection-header">
+        <h2 class="selection-title">進むルートを選択してください</h2>
+      </header>
+      
+      <div class="selection-container">
+        <!-- プレイヤーA（西校舎）- 左側 -->
+        <div class="route-option route-a" id="route-player-a">
+          <div class="route-bg" style="background-image: url('assets/bg_classroom.png');"></div>
+          <div class="route-content">
+            <span class="route-tag">PLAYER A</span>
+            <h3 class="route-name">西校舎</h3>
+            <p class="route-desc">3年1組をはじめとする普通教室棟。静まり返った教室の黒板に、何かが書き残されている。</p>
+          </div>
+        </div>
+
+        <!-- プレイヤーB（東校舎）- 右側 -->
+        <div class="route-option route-b" id="route-player-b">
+          <div class="route-bg" style="background-image: url('assets/bg_science.png');"></div>
+          <div class="route-content">
+            <span class="route-tag">PLAYER B</span>
+            <h3 class="route-name">東校舎</h3>
+            <p class="route-desc">理科室や美術室がある特別実習棟。不気味な薬品や実験器具が謎を隠している。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. プレイヤーA画面 (西校舎 - 3年1組) -->
+    <section id="player-a-screen" class="screen game-screen">
+      <div class="overlay"></div>
+      <header class="hud-header">
+        <div class="player-indicator">
+          <div class="status-dot"></div>
+          <span class="player-role" id="role-text-a">西校舎 3年1組 ／ 誰もいない教室</span>
+        </div>
+      </header>
+
+      <div class="game-container game-container-layout">
+        <!-- パネル -->
+        <div class="puzzle-panel panel-player-a" id="panel-a">
+          <div class="panel-body">
+            <!-- 謎ビジュアルエリア（上部） -->
+            <div class="puzzle-visual" id="visual-a">
+              <div class="icon-placeholder">📝</div>
+              <p class="clue-label">黒板に書かれた奇妙なメッセージ：</p>
+              <div class="puzzle-clue">
+                「元素のアルファベット文字数」<br>
+                H=8, O=6, C=6 ...
+              </div>
+              <p class="instruction-text">
+                黒板に不気味なメッセージが残されている。「元素のアルファベット文字数」？<br>
+                音楽室（Player B）にいる相方に、そちらの状況を確認してみよう。
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 解答エリア（謎問題の枠の外） -->
+        <div class="puzzle-control-outside" id="control-a">
+          <div class="puzzle-input-group-centered">
+            <input type="text" class="puzzle-input" id="input-code-a" placeholder="回答を入力" maxlength="4">
+            <button class="btn-submit" id="btn-submit-a">回答</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 西校舎マップ (左下) -->
+      <div class="map-container map-west" id="map-west">
+        <div class="map-header">西校舎マップ (普通教室棟)</div>
+        <div class="map-grid">
+          <!-- 3F -->
+          <button class="map-cell active-room" data-room="3-1" data-num="301">3-1</button>
+          <button class="map-cell" data-room="3-2" data-num="302">3-2</button>
+          <button class="map-cell" data-room="3-3" data-num="303">3-3</button>
+          <button class="map-cell" data-room="stairs-3f" data-num="304"><span>階段</span></button>
+          <!-- 2F -->
+          <button class="map-cell" data-room="2-1" data-num="201">2-1</button>
+          <button class="map-cell" data-room="2-2" data-num="202">2-2</button>
+          <button class="map-cell" data-room="2-3" data-num="203">2-3</button>
+          <button class="map-cell" data-room="stairs-2f" data-num="204"><span>階段</span></button>
+          <!-- 1F -->
+          <button class="map-cell" data-room="1-1" data-num="101">1-1</button>
+          <button class="map-cell" data-room="1-2" data-num="102">1-2</button>
+          <button class="map-cell" data-room="1-3" data-num="103">1-3</button>
+          <button class="map-cell" data-room="entrance" data-num="104">扉</button>
+          <!-- 玄関 (西：端から端までの長い長方形) -->
+          <button class="map-cell" data-room="gate" data-num="004">玄関</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. プレイヤーB画面 (東校舎 - 音楽室) -->
+    <section id="player-b-screen" class="screen game-screen">
+      <div class="overlay"></div>
+      <header class="hud-header">
+        <div class="player-indicator">
+          <div class="status-dot player-b-dot"></div>
+          <span class="player-role" id="role-text-b">東校舎 音楽室 ／ 月光のピアノ</span>
+        </div>
+      </header>
+
+      <div class="game-container game-container-layout">
+        <!-- パネル -->
+        <div class="puzzle-panel panel-player-b" id="panel-b">
+          <div class="panel-body">
+            <!-- 謎ビジュアルエリア（上部） -->
+            <div class="puzzle-visual" id="visual-b">
+              <div class="icon-placeholder">🎹</div>
+              <p class="clue-label">閉ざされたグランドピアノ：</p>
+              <div class="puzzle-clue">
+                PIANO LOCK
+              </div>
+              <p class="instruction-text">
+                不気味なグランドピアノが置かれている。鍵盤の蓋には鍵がかかっており、弾くことができない。どこかに鍵があるはずだ...
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 解答エリア（謎問題の枠の外） -->
+        <div class="puzzle-control-outside" id="control-b" style="display: none;">
+          <div class="puzzle-input-group-centered">
+            <input type="text" class="puzzle-input" id="input-code-b" placeholder="回答を入力" maxlength="4">
+            <button class="btn-submit" id="btn-submit-b">回答</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 東校舎マップ (右下 - 右上から左へ並べる) -->
+      <div class="map-container map-east" id="map-east">
+        <div class="map-header">東校舎マップ (特別実習棟)</div>
+        <div class="map-grid">
+          <!-- 3F (左から: 階段 ➔ 準備室 ➔ 美術室 ➔ 音楽室) -->
+          <button class="map-cell" data-room="stairs-3f" data-num="308"><span>階段</span></button>
+          <button class="map-cell" data-room="prep" data-num="307">準備室</button>
+          <button class="map-cell" data-room="art" data-num="306">美術室</button>
+          <button class="map-cell active-room" data-room="music" data-num="305">音楽室</button>
+          <!-- 2F (左から: 階段 ➔ 会議室 ➔ 家庭科 ➔ 理科室) -->
+          <button class="map-cell" data-room="stairs-2f" data-num="208"><span>階段</span></button>
+          <button class="map-cell" data-room="meeting" data-num="207">会議室</button>
+          <button class="map-cell" data-room="cooking" data-num="206">家庭科</button>
+          <button class="map-cell" data-room="science" data-num="205">理科室</button>
+          <!-- 1F (左から: 用務員 ➔ 保健室 ➔ 校長室 ➔ 職員室) -->
+          <button class="map-cell" data-room="janitor" data-num="108">扉</button>
+          <button class="map-cell" data-room="infirmary" data-num="107">保健室</button>
+          <button class="map-cell" data-room="principal" data-num="106">校長室</button>
+          <button class="map-cell" data-room="staff" data-num="105">職員室</button>
+          <!-- 玄関 (東：端から端までの長い長方形) -->
+          <button class="map-cell" data-room="gate" data-num="008">玄関</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ゲームクリア画面 -->
+    <section id="clear-screen" class="screen" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background-image: url('assets/bg_title.png');">
+      <div class="overlay"></div>
+      <div class="title-container" style="gap: 1.5rem; max-width: 700px; z-index: 5;">
+        <h1 class="game-title" style="color: var(--color-neon-green); text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 30px var(--color-neon-green);">脱出成功</h1>
+        <p style="font-size: 1.2rem; line-height: 1.8; color: var(--color-text-light);">
+          ガコン！と大きな音がして、学校の重い扉が開いた。<br>
+          あなたたちは冷たい夜風の中へ飛び出し、無事に学校から脱出した！<br>
+          強い絆で結ばれた2人は、もう暗闇を恐れることはないだろう。
+        </p>
+        <button class="btn-start" onclick="location.reload()" style="margin-top: 1.5rem;">最初から遊ぶ</button>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

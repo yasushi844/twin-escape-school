@@ -1,0 +1,1032 @@
+/* @import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=M+PLUS+1p:wght@400;700&family=New+Tegomin&family=Outfit:wght@300;400;600&display=swap');
+
+:root {
+  --color-bg-dark: #05050a;
+  --color-text-light: #e0e0ed;
+  --color-text-muted: #8a8a9e;
+  
+  /* 怪しい光のカラー */
+  --color-neon-purple: #9d4edf;
+  --color-neon-blue: #00f2fe;
+  --color-neon-green: #39ff14;
+  --color-neon-red: #ff0055;
+
+  --font-title: 'New Tegomin', 'Cinzel', serif;
+  --font-body: 'M PLUS 1p', 'Outfit', sans-serif;
+  
+  --transition-smooth: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-fast: all 0.2s ease;
+}
+
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+}
+
+/* App Container */
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Screen Base */
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease, visibility 1s ease;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.screen.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 10;
+}
+
+/* Dark Vignette Overlay */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, transparent 20%, rgba(5, 5, 10, 0.9) 95%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Fog Effect */
+.fog-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.fog-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.03) 25%, 
+    rgba(255, 255, 255, 0.08) 50%, 
+    rgba(255, 255, 255, 0.03) 75%, 
+    transparent 100%
+  );
+}
+
+.fog-layer-1 {
+  animation: drift 25s linear infinite;
+  filter: blur(10px);
+}
+
+.fog-layer-2 {
+  animation: drift 40s linear infinite reverse;
+  filter: blur(15px);
+  opacity: 0.7;
+}
+
+@keyframes drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Flicker Animation for Horror Vibe */
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(157, 78, 223, 0.8));
+  }
+  20%, 24%, 55% {
+    opacity: 0.5;
+    filter: none;
+  }
+}
+
+/* --- 1. TITLE SCREEN --- */
+#title-screen {
+  background-image: url('assets/bg_title.png');
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.title-container {
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 800px;
+  padding: 2rem;
+}
+
+.game-title {
+  font-family: var(--font-title);
+  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  font-weight: normal;
+  letter-spacing: clamp(0.1rem, 1vw, 0.4rem);
+  white-space: nowrap;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 30px var(--color-neon-purple);
+  animation: title-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes title-pulse {
+  0% {
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 10px var(--color-neon-purple), 0 0 20px var(--color-neon-purple);
+    transform: scale(1);
+  }
+  100% {
+    text-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 20px var(--color-neon-purple), 0 0 40px var(--color-neon-purple);
+    transform: scale(1.02);
+  }
+}
+
+.game-subtitle {
+  font-size: 1.2rem;
+  letter-spacing: 0.8rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  margin-top: -1rem;
+}
+
+.btn-start {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.3rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.2rem 3rem;
+  border-radius: 4px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: var(--transition-smooth);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-start::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: 0.5s;
+}
+
+.btn-start:hover::before {
+  left: 100%;
+}
+
+.btn-start:hover {
+  background: rgba(157, 78, 223, 0.2);
+  border-color: var(--color-neon-purple);
+  box-shadow: 0 0 30px rgba(157, 78, 223, 0.6);
+  transform: translateY(-3px);
+  text-shadow: 0 0 10px #fff;
+}
+
+.btn-start:active {
+  transform: translateY(-1px);
+}
+
+/* --- 2. SELECTION SCREEN --- */
+#selection-screen {
+  background-image: url('assets/bg_title.png'); /* 同じ背景で暗めにする */
+  display: flex;
+  flex-direction: column;
+}
+
+.selection-header {
+  height: 15vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  background: linear-gradient(to bottom, rgba(5, 5, 10, 0.9), transparent);
+}
+
+.selection-title {
+  font-family: var(--font-title);
+  font-size: 2rem;
+  letter-spacing: 0.3rem;
+  color: var(--color-text-light);
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+.selection-container {
+  height: 85vh;
+  display: flex;
+  width: 100%;
+  z-index: 5;
+}
+
+.route-option {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.route-option:last-child {
+  border-right: none;
+}
+
+/* 左右の背景プレビュー */
+.route-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  transition: var(--transition-smooth);
+  filter: grayscale(40%) blur(2px);
+  z-index: 1;
+}
+
+.route-content {
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 3rem;
+  transition: var(--transition-smooth);
+}
+
+.route-tag {
+  font-size: 0.9rem;
+  letter-spacing: 0.2rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.route-name {
+  font-family: var(--font-title);
+  font-size: 3rem;
+  letter-spacing: 0.2rem;
+  color: #fff;
+  transition: var(--transition-smooth);
+}
+
+.route-desc {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  max-width: 320px;
+  line-height: 1.6;
+  transition: var(--transition-smooth);
+}
+
+/* プレイヤーA（東校舎 - 理科室）ホバーエフェクト */
+.route-a:hover .route-bg {
+  opacity: 0.75;
+  filter: grayscale(0%) blur(0);
+  transform: scale(1.05);
+}
+
+.route-a:hover .route-name {
+  color: var(--color-neon-blue);
+  text-shadow: 0 0 15px var(--color-neon-blue);
+}
+
+.route-a:hover {
+  background: rgba(0, 242, 254, 0.03);
+  box-shadow: inset 0 0 50px rgba(0, 242, 254, 0.1);
+}
+
+.route-a .route-tag {
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  color: var(--color-neon-blue);
+}
+
+/* プレイヤーB（東校舎 - 理科室）ホバーエフェクト */
+.route-b:hover .route-bg {
+  opacity: 0.75;
+  filter: grayscale(0%) blur(0);
+  transform: scale(1.05);
+}
+
+.route-b:hover .route-name {
+  color: var(--color-neon-green);
+  text-shadow: 0 0 15px var(--color-neon-green);
+}
+
+.route-b:hover {
+  background: rgba(57, 255, 20, 0.03);
+  box-shadow: inset 0 0 50px rgba(57, 255, 20, 0.1);
+}
+
+.route-b .route-tag {
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  color: var(--color-neon-green);
+}
+
+
+/* --- 3. GAME SCREEN (PLAYER A / B) --- */
+.game-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+#player-a-screen {
+  background-image: url('assets/bg_classroom.png');
+}
+
+#player-b-screen {
+  background-image: url('assets/bg_science.png');
+}
+
+/* HUD Header */
+.hud-header {
+  height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 3rem;
+  z-index: 5;
+  background: linear-gradient(to bottom, rgba(5, 5, 10, 0.9), transparent);
+}
+
+.player-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.status-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--color-neon-blue);
+  box-shadow: 0 0 15px var(--color-neon-blue), 0 0 5px rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+}
+
+.player-b-dot {
+  background-color: var(--color-neon-green);
+  box-shadow: 0 0 15px var(--color-neon-green), 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+.player-role {
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: normal;
+  letter-spacing: 0.15rem;
+}
+
+#role-text-a {
+  color: #fff;
+  text-shadow: 0 0 12px rgba(0, 242, 254, 0.5);
+}
+
+#role-text-b {
+  color: #fff;
+  text-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+}
+
+.btn-back {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-light);
+  padding: 0.5rem 1.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-back:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Game Interface Body */
+.game-container {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  padding: 2rem;
+}
+
+/* Center Panel (Glassmorphism) */
+.puzzle-panel {
+  background: rgba(5, 5, 10, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+/* Blue borders for Player A panel */
+.panel-player-a {
+  border-color: rgba(0, 242, 254, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 242, 254, 0.05), 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+/* Green borders for Player B panel */
+.panel-player-b {
+  border-color: rgba(57, 255, 20, 0.2);
+  box-shadow: 0 10px 30px rgba(57, 255, 20, 0.05), 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+.panel-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header h2 {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: normal;
+  letter-spacing: 0.15rem;
+}
+
+.panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 1.5rem;
+}
+
+.puzzle-visual {
+  flex: 1;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-text-muted);
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.puzzle-visual .icon-placeholder,
+.puzzle-visual .clue-label,
+.puzzle-visual .instruction-text {
+  display: none !important;
+}
+
+.game-container-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 5vh;
+  gap: 1.5rem;
+}
+
+.puzzle-clue {
+  font-family: monospace;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+
+.clue-answer {
+  font-size: 1.9rem;
+  font-weight: bold;
+  display: block;
+  margin-top: 0.8rem;
+}
+
+.instruction-text {
+  margin-top: 1rem;
+  max-width: 600px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.icon-placeholder {
+  font-size: 3rem;
+  opacity: 0.5;
+  animation: pulse-slow 2s infinite alternate;
+}
+
+@keyframes pulse-slow {
+  0% { transform: scale(1); opacity: 0.4; }
+  100% { transform: scale(1.05); opacity: 0.7; }
+}
+
+.puzzle-control-outside {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(5, 5, 10, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 6;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#control-a {
+  border-color: rgba(0, 242, 254, 0.25);
+  box-shadow: 0 5px 15px rgba(0, 242, 254, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#control-b {
+  border-color: rgba(57, 255, 20, 0.25);
+  box-shadow: 0 5px 15px rgba(57, 255, 20, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.puzzle-input-group-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.puzzle-input {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 4px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  letter-spacing: 0.1rem;
+  text-align: center;
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.puzzle-input:focus {
+  border-color: var(--color-neon-purple);
+  box-shadow: 0 0 10px rgba(157, 78, 223, 0.3);
+}
+
+#player-a-screen .puzzle-input:focus {
+  border-color: var(--color-neon-blue);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+}
+
+#player-b-screen .puzzle-input:focus {
+  border-color: var(--color-neon-green);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+
+.btn-submit {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.2rem;
+  transition: var(--transition-fast);
+}
+
+#player-a-screen .btn-submit {
+  background: rgba(0, 242, 254, 0.08);
+  border: 1px solid rgba(0, 242, 254, 0.4);
+  color: var(--color-neon-blue);
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+}
+
+#player-a-screen .btn-submit:hover {
+  background: rgba(0, 242, 254, 0.2);
+  border-color: var(--color-neon-blue);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.5);
+  color: #fff;
+  text-shadow: none;
+}
+
+#player-b-screen .btn-submit {
+  background: rgba(57, 255, 20, 0.08);
+  border: 1px solid rgba(57, 255, 20, 0.4);
+  color: var(--color-neon-green);
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+}
+
+#player-b-screen .btn-submit:hover {
+  background: rgba(57, 255, 20, 0.2);
+  border-color: var(--color-neon-green);
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+  color: #fff;
+  text-shadow: none;
+}
+
+/* --- 4. MAP INTERFACE --- */
+.map-container {
+  position: absolute;
+  bottom: 8rem;
+  width: 380px;
+  background: rgba(5, 5, 10, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1.2rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.map-west {
+  left: 3.5rem;
+  border-color: rgba(0, 242, 254, 0.3);
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+}
+
+.map-east {
+  right: 3.5rem;
+  border-color: rgba(57, 255, 20, 0.3);
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.15);
+}
+
+.map-header {
+  font-family: var(--font-title);
+  font-size: 1rem;
+  letter-spacing: 0.15rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.6rem;
+}
+
+.map-west .map-header {
+  color: var(--color-neon-blue);
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.3);
+}
+
+.map-east .map-header {
+  color: var(--color-neon-green);
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.3);
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0.6rem;
+  height: 150px;
+  transition: height var(--transition-normal);
+}
+
+.map-grid.has-gate {
+  grid-template-rows: repeat(4, 1fr);
+  height: 200px;
+}
+
+.map-grid .map-cell[data-room="gate"],
+.map-grid .map-space {
+  display: none !important;
+}
+
+.map-grid.has-gate .map-cell[data-room="gate"] {
+  display: flex !important;
+}
+
+.map-grid.has-gate .map-space {
+  display: block !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.map-cell {
+  position: relative;
+  background: #000000;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  padding-top: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition-fast);
+  background-repeat: no-repeat;
+  background-size: 13px 13px;
+  background-position: bottom 3px left 5px;
+}
+
+.map-cell::before {
+  display: none;
+}
+
+.map-cell:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 西校舎（青）の図面設定 */
+.map-west .map-cell {
+  border-color: rgba(0, 242, 254, 0.2);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 10 90 A 80 80 0 0 0 90 10 L 90 90' fill='none' stroke='%2300f2fe' stroke-opacity='0.4' stroke-width='6'/></svg>");
+}
+
+.map-west .map-cell:hover {
+  border-color: var(--color-neon-blue);
+  box-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+}
+
+@keyframes pulse-active-west {
+  0% { box-shadow: 0 0 5px rgba(0, 242, 254, 0.4), inset 0 0 5px rgba(0, 242, 254, 0.2); }
+  100% { box-shadow: 0 0 15px rgba(0, 242, 254, 0.8), inset 0 0 10px rgba(0, 242, 254, 0.4); }
+}
+
+.map-west .map-cell.active-room {
+  background-color: rgba(0, 242, 254, 0.15);
+  border-color: var(--color-neon-blue);
+  color: #fff;
+  font-weight: bold;
+  animation: pulse-active-west 1.5s infinite alternate;
+  text-shadow: 0 0 5px #fff;
+}
+
+/* 東校舎（緑）の図面設定 */
+.map-east .map-cell {
+  border-color: rgba(57, 255, 20, 0.2);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M 10 90 A 80 80 0 0 0 90 10 L 90 90' fill='none' stroke='%2339ff14' stroke-opacity='0.4' stroke-width='6'/></svg>");
+}
+
+.map-east .map-cell:hover {
+  border-color: var(--color-neon-green);
+  box-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+}
+
+@keyframes pulse-active-east {
+  0% { box-shadow: 0 0 5px rgba(57, 255, 20, 0.4), inset 0 0 5px rgba(57, 255, 20, 0.2); }
+  100% { box-shadow: 0 0 15px rgba(57, 255, 20, 0.8), inset 0 0 10px rgba(57, 255, 20, 0.4); }
+}
+
+.map-east .map-cell.active-room {
+  background-color: rgba(57, 255, 20, 0.15);
+  border-color: var(--color-neon-green);
+  color: #fff;
+  font-weight: bold;
+  animation: pulse-active-east 1.5s infinite alternate;
+  text-shadow: 0 0 5px #fff;
+}
+
+/* 階段マスの「かたどられた」デザイン (西校舎 - 右上ジグザグ4段: 反転) */
+.map-west .map-cell[data-room^="stairs-"] {
+  position: relative;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 16px;
+  background-color: transparent !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  /* viewBox=0 0 150 100 でx座標を1.5倍にスケールアップ → 横に1.5倍引き伸ばし */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%23000000' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  transition: var(--transition-fast);
+}
+
+.map-west .map-cell[data-room^="stairs-"]:hover {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%2300f2fe26' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8));
+}
+
+.map-west .map-cell[data-room^="stairs-"]:hover span {
+  color: #fff;
+}
+
+/* 階段マスの「かたどられた」デザイン (東校舎 - 左上ジグザグ4段) */
+.map-east .map-cell[data-room^="stairs-"] {
+  position: relative;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 16px;
+  background-color: transparent !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  /* viewBox=0 0 150 100 でx座標を1.5倍にスケールアップ → 横に1.5倍引き伸ばし */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%23000000' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  transition: var(--transition-fast);
+}
+
+.map-east .map-cell[data-room^="stairs-"]:hover {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%2339ff1426' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.8));
+}
+
+.map-east .map-cell[data-room^="stairs-"]:hover span {
+  color: #fff;
+}
+
+/* 擬似要素マスクは不要なので削除 */
+.map-west .map-cell[data-room^="stairs-"]::before,
+.map-west .map-cell[data-room^="stairs-"]::after,
+.map-east .map-cell[data-room^="stairs-"]::before,
+.map-east .map-cell[data-room^="stairs-"]::after {
+  display: none !important;
+}
+
+/* 階段マスのテキスト（前面に表示） */
+.map-west .map-cell[data-room^="stairs-"] span {
+  position: relative;
+  z-index: 5;
+  color: var(--color-text-muted);
+  left: -10px; /* 西側は左に10pxずらす */
+}
+
+.map-east .map-cell[data-room^="stairs-"] span {
+  position: relative;
+  z-index: 5;
+  color: var(--color-text-muted);
+  left: 10px; /* 東側は右に10pxずらす */
+}
+
+/* 階段のアクティブ（パルス点滅）効果 */
+@keyframes pulse-active-stair-west {
+  0% { filter: drop-shadow(0 0 2px rgba(0, 242, 254, 0.4)); opacity: 0.8; }
+  100% { filter: drop-shadow(0 0 12px rgba(0, 242, 254, 1)); opacity: 1; }
+}
+
+@keyframes pulse-active-stair-east {
+  0% { filter: drop-shadow(0 0 2px rgba(57, 255, 20, 0.4)); opacity: 0.8; }
+  100% { filter: drop-shadow(0 0 12px rgba(57, 255, 20, 1)); opacity: 1; }
+}
+
+.map-west .map-cell[data-room^="stairs-"].active-room {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%2300f2fe26' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  animation: pulse-active-stair-west 1.5s infinite alternate !important;
+}
+
+.map-west .map-cell[data-room^="stairs-"].active-room span {
+  color: #fff;
+}
+
+.map-east .map-cell[data-room^="stairs-"].active-room {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%2339ff1426' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  animation: pulse-active-stair-east 1.5s infinite alternate !important;
+}
+
+.map-east .map-cell[data-room^="stairs-"].active-room span {
+  color: #fff;
+}
+
+/* ロックされたマップセルのスタイル */
+.map-cell.locked-cell {
+  background: rgba(10, 10, 15, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  animation: none !important;
+  filter: grayscale(100%) brightness(0.4);
+}
+
+/* 未開放の階段は暗い色合いのSVGアイコンを適用する（ジグザグ階段の形状をキープする） */
+.map-west .map-cell[data-room^="stairs-"].locked-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%23000000' stroke='%23ffffff1a' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+
+.map-east .map-cell[data-room^="stairs-"].locked-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%23000000' stroke='%23ffffff1a' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+
+/* 1階の階段列セル（西のentrance、東のjanitor）の扉（ドア）アイコン化 */
+
+/* 通常時 */
+.map-west .map-cell[data-room="entrance"] {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  /* 扉の横幅を少しだけ狭めてバランスを取り（幅100）、ドアノブなしの上品なアーチドアを描画 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+
+.map-east .map-cell[data-room="janitor"] {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  /* 扉の横幅を少しだけ狭めてバランスを取り（幅100）、ドアノブなしの上品なアーチドアを描画 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+
+/* ホバー時 */
+.map-west .map-cell[data-room="entrance"]:hover {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%2300f2fe26' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  filter: drop-shadow(0 0 8px rgba(0, 242, 254, 0.8));
+}
+
+.map-east .map-cell[data-room="janitor"]:hover {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%2339ff1426' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  filter: drop-shadow(0 0 8px rgba(57, 255, 20, 0.8));
+}
+
+/* アクティブ（選択中） */
+.map-west .map-cell[data-room="entrance"].active-room {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%2300f2fe26' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  animation: pulse-active-stair-west 1.5s infinite alternate !important;
+}
+
+.map-east .map-cell[data-room="janitor"].active-room {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%2339ff1426' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  animation: pulse-active-stair-east 1.5s infinite alternate !important;
+}
+
+/* 未開放（ロック）状態 */
+.map-west .map-cell[data-room="entrance"].locked-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%23ffffff1a' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+
+.map-east .map-cell[data-room="janitor"].locked-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%23ffffff1a' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+
+/* 玄関セル専用：横幅いっぱい（スパン4）の長い長方形デザイン */
+.map-cell[data-room="gate"] {
+  grid-column: span 4 !important;
+}
