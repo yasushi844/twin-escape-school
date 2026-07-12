@@ -1386,8 +1386,13 @@ body {
   }
 
   .game-container {
-    /* 左右のパディングを端からしっかりと離す（1rem〜1.8remの流動） */
-    padding: 1.5rem clamp(1rem, 5vw, 1.8rem) 4rem clamp(1rem, 5vw, 1.8rem) !important;
+    /* スマホの左右パディングをさらに底上げして確実に余白を確保(1.5rem〜2rem) */
+    padding: 1.5rem clamp(1.5rem, 6vw, 2rem) 4rem clamp(1.5rem, 6vw, 2rem) !important;
+  }
+
+  .game-container-layout {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .puzzle-panel {
@@ -1408,9 +1413,20 @@ body {
     gap: 1rem !important;
   }
 
-  /* 謎画像のサイズ調整 */
+  /* 謎画像のサイズ調整：横幅に合わせて確実に自動縮小（height: auto）させる */
   .puzzle-clue img {
+    width: 100% !important;
+    height: auto !important;
     max-height: 250px !important;
+  }
+
+  /* テキストの謎が横にはみ出さないように折り返し設定を強化 */
+  .puzzle-clue {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    text-align: center !important;
+    width: 100% !important;
+    font-size: clamp(1.1rem, 3.5vw, 1.4rem) !important; /* テキストサイズもスマホ幅に合わせて縮小 */
   }
 
   .icon-placeholder {
@@ -1450,6 +1466,7 @@ body {
     flex-direction: column !important;
     height: auto !important;
     min-height: 80vh !important;
+    padding: 0 clamp(1.2rem, 5vw, 2rem) !important; /* 左右にしっかり余白を設ける */
   }
 
   .route-option {
@@ -1457,10 +1474,13 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     padding: 2.5rem 1.5rem !important;
     min-height: 200px !important;
+    border-radius: 8px !important; /* カードを丸めて浮遊感のある綺麗なデザインにする */
+    margin-bottom: 1.5rem !important; /* カード同士の間に空間を作る */
   }
 
   .route-option:last-child {
     border-bottom: none !important;
+    margin-bottom: 0 !important;
   }
 
   .select-container {
