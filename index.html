@@ -65,9 +65,12 @@
     <section id="player-a-screen" class="screen game-screen">
       <div class="overlay"></div>
       <header class="hud-header">
-        <div class="player-indicator">
-          <div class="status-dot"></div>
-          <span class="player-role" id="role-text-a">西校舎 3年1組</span>
+        <div class="hud-left-group">
+          <div class="mini-logo">夜の学校からの脱出</div>
+          <div class="player-indicator">
+            <div class="status-dot"></div>
+            <span class="player-role" id="role-text-a">西校舎 3年1組</span>
+          </div>
         </div>
         <div class="hud-controls">
           <button class="btn-mute" id="btn-mute-a">🔊 BGM ON</button>
@@ -120,19 +123,19 @@
                   音楽室（Player B）にいる相方に、そちらの状況を確認してみよう。
                 </p>
               </div>
-            </div>
-          </div>
-          
-          <!-- 解答エリア（謎問題の枠の外） -->
-          <div class="puzzle-control-outside" id="control-a">
-            <div class="puzzle-input-group-centered">
-              <input type="text" class="puzzle-input" id="input-code-a" placeholder="回答を入力" maxlength="4">
-              <button class="btn-submit" id="btn-submit-a">回答</button>
+
+              <!-- 解答エリア（謎問題パネル内に統合） -->
+              <div class="puzzle-control-inside" id="control-a">
+                <div class="puzzle-input-group-centered">
+                  <input type="text" class="puzzle-input" id="input-code-a" placeholder="解答を入力" maxlength="4">
+                  <button class="btn-submit" id="btn-submit-a">解答</button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
-        <!-- 右側の対照用空プレースホルダー（西棟用） -->
-        <div class="map-placeholder"></div>
+        <!-- 元のインラインペイントツールは削除 -->
       </div>
     </section>
 
@@ -140,9 +143,12 @@
     <section id="player-b-screen" class="screen game-screen">
       <div class="overlay"></div>
       <header class="hud-header">
-        <div class="player-indicator">
-          <div class="status-dot player-b-dot"></div>
-          <span class="player-role" id="role-text-b">東校舎 音楽室</span>
+        <div class="hud-left-group">
+          <div class="mini-logo">夜の学校からの脱出</div>
+          <div class="player-indicator">
+            <div class="status-dot player-b-dot"></div>
+            <span class="player-role" id="role-text-b">東校舎 音楽室</span>
+          </div>
         </div>
         <div class="hud-controls">
           <button class="btn-mute" id="btn-mute-b">🔊 BGM ON</button>
@@ -151,8 +157,7 @@
       </header>
 
       <div class="game-container game-container-layout">
-        <!-- 左側の対照用空プレースホルダー（東棟用） -->
-        <div class="map-placeholder"></div>
+        <!-- 元のインラインペイントツールは削除 -->
         <!-- 中央のメインコンテンツ（縦並び） -->
         <div class="puzzle-main-content">
           <!-- パネル -->
@@ -169,14 +174,15 @@
                   不気味なグランドピアノが置かれている。鍵盤の蓋には鍵がかかっており、弾くことができない。どこかに鍵があるはずだ...
                 </p>
               </div>
-            </div>
-          </div>
-          
-          <!-- 解答エリア（謎問題の枠の外） -->
-          <div class="puzzle-control-outside" id="control-b" style="display: none;">
-            <div class="puzzle-input-group-centered">
-              <input type="text" class="puzzle-input" id="input-code-b" placeholder="回答を入力" maxlength="4">
-              <button class="btn-submit" id="btn-submit-b">回答</button>
+
+              <!-- 解答エリア（謎問題パネル内に統合） -->
+              <div class="puzzle-control-inside" id="control-b" style="display: none;">
+                <div class="puzzle-input-group-centered">
+                  <input type="text" class="puzzle-input" id="input-code-b" placeholder="解答を入力" maxlength="4">
+                  <button class="btn-submit" id="btn-submit-b">解答</button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -210,16 +216,10 @@
     </section>
 
     <!-- 5. ゲームクリア画面 -->
-    <section id="clear-screen" class="screen" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background-image: url('assets/bg_title.png');">
-      <div class="overlay"></div>
-      <div class="title-container" style="gap: 1.5rem; max-width: 700px; z-index: 5;">
-        <h1 class="game-title" style="color: var(--color-neon-green); text-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 30px var(--color-neon-green);">脱出成功</h1>
-        <p style="font-size: 1.2rem; line-height: 1.8; color: var(--color-text-light);">
-          ガコン！と大きな音がして、学校の重い扉が開いた。<br>
-          あなたたちは冷たい夜風の中へ飛び出し、無事に学校から脱出した！<br>
-          強い絆で結ばれた2人は、もう暗闇を恐れることはないだろう。
-        </p>
-        <button class="btn-start" onclick="location.reload()" style="margin-top: 1.5rem;">最初から遊ぶ</button>
+    <section id="clear-screen" class="screen clear-whiteout">
+      <div class="clear-content">
+        <h1 class="game-clear-text">GAMECLEAR</h1>
+        <button class="btn-start fade-in-btn" onclick="location.reload()">最初から遊ぶ</button>
       </div>
     </section>
 

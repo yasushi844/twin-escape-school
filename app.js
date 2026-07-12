@@ -107,6 +107,67 @@ document.addEventListener('DOMContentLoaded', () => {
     'gate1': '玄関前', 'gate2': '玄関', 'gate3': '正門'
   };
 
+  // --- 自動移動用の次の部屋定義 ---
+  const nextRoomsA = {
+    '3-1': '3-2', '3-2': '3-3', '3-3': 'stairs-3f', 'stairs-3f': '2-1',
+    '2-1': '2-2', '2-2': '2-3', '2-3': 'stairs-2f', 'stairs-2f': '1-1',
+    '1-1': '1-2', '1-2': '1-3', '1-3': 'entrance', 'entrance': 'gate1',
+    'gate1': 'gate2', 'gate2': 'gate3'
+  };
+
+  const nextRoomsB = {
+    'music': 'art', 'art': 'prep', 'prep': 'stairs-3f', 'stairs-3f': 'science',
+    'science': 'cooking', 'cooking': 'meeting', 'meeting': 'stairs-2f', 'stairs-2f': 'staff',
+    'staff': 'principal', 'principal': 'infirmary', 'infirmary': 'janitor', 'janitor': 'gate1',
+    'gate1': 'gate2', 'gate2': 'gate3'
+  };
+
+  // --- 共通の終盤エリアデータ生成ファクトリ ---
+  const createCommonGates = (prefix) => ({
+    'gate1': {
+      title: `${prefix} 玄関前 ／ 屋内結節エリア`,
+      icon: '🚪',
+      clueLabel: '玄関前の鍵ボックス：',
+      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
+      clueColor: 'var(--color-neon-purple)',
+      instruction: '扉を抜けた先に広がる屋内結節エリアだ。<br>外に出るには別の鍵が必要のようだ…',
+      showControl: true,
+      code: '0',
+      successMsg: '【玄関前ロック解除！】\n鍵ボックスが開いた！玄関ゲートの鍵を入手した。'
+    },
+    'gate2': {
+      title: `${prefix} 玄関 ／ 最終出口ゲート`,
+      icon: '🚪',
+      clueLabel: '玄関チェーンロック：',
+      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
+      clueColor: 'var(--color-neon-purple)',
+      instruction: '屋外へとつながる大きな玄関チェーンロックだ。<br>最後の屋外ゲートを解除すれば、正門へ到達できる！',
+      showControl: true,
+      code: '0',
+      successMsg: '【玄関ロック解除！】\n大きなチェーンが外れた！正門への道が開けたよ。'
+    },
+    'gate3': {
+      title: `${prefix} 正門 ／ 完全脱出口`,
+      icon: '🚩',
+      clueLabel: '正門電子ロック：',
+      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
+      clueColor: 'var(--color-neon-red)',
+      instruction: '最後の防壁だ！正門の電子ロックを解除すれば、いよいよ脱出成功だ！<br>お互いが正門コードを入力して、一緒にゲートを開こう！',
+      showControl: true,
+      code: '0',
+      successMsg: `【正門解除！】\n${prefix}の正門が開いた！脱出まであと一歩！`
+    },
+    'default': {
+      title: `${prefix} 教室 ／ 暗闇の部屋`,
+      icon: '🚪',
+      clueLabel: '施錠中：',
+      clueHtml: '',
+      clueColor: 'var(--color-text-muted)',
+      instruction: '鍵がかかっているようだ。今はまだ探索する意味がない。他の部屋を調べよう。',
+      showControl: false
+    }
+  });
+
   // --- 部屋データ定義 ---
   const roomsWest = {
     '3-1': {
@@ -241,48 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
       code: '0',
       successMsg: '【扉ロック解除！】\nマスターキーAを回し、西側のロックを外した！玄関前への道が開いたよ。'
     },
-    'gate1': {
-      title: '西校舎 玄関前 ／ 屋内結節エリア',
-      icon: '🚪',
-      clueLabel: '玄関前の鍵ボックス：',
-      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
-      clueColor: 'var(--color-neon-purple)',
-      instruction: '扉を抜けた先に広がる屋内結節エリアだ。<br>外に出るには別の鍵が必要のようだ…',
-      showControl: true,
-      code: '0',
-      successMsg: '【玄関前ロック解除！】\n鍵ボックスが開いた！玄関ゲートの鍵を入手した。'
-    },
-    'gate2': {
-      title: '西校舎 玄関 ／ 最終出口ゲート',
-      icon: '🚪',
-      clueLabel: '玄関チェーンロック：',
-      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
-      clueColor: 'var(--color-neon-purple)',
-      instruction: '屋外へとつながる大きな玄関チェーンロックだ。<br>最後の屋外ゲートを解除すれば、正門へ到達できる！',
-      showControl: true,
-      code: '0',
-      successMsg: '【玄関ロック解除！】\n大きなチェーンが外れた！正門への道が開けたよ。'
-    },
-    'gate3': {
-      title: '西校舎 正門 ／ 完全脱出口',
-      icon: '🚩',
-      clueLabel: '正門電子ロック：',
-      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
-      clueColor: 'var(--color-neon-red)',
-      instruction: '最後の防壁だ！正門の電子ロックを解除すれば、いよいよ脱出成功だ！<br>お互いが正門コードを入力して、一緒にゲートを開こう！',
-      showControl: true,
-      code: '0',
-      successMsg: '【正門解除！】\n西側の正門が開いた！脱出まであと一歩！'
-    },
-    'default': {
-      title: '西校舎 教室 ／ 暗闇の部屋',
-      icon: '🚪',
-      clueLabel: '施錠中：',
-      clueHtml: '',
-      clueColor: 'var(--color-text-muted)',
-      instruction: '鍵がかかっているようだ。今はまだ探索する意味がない。他の部屋を調べよう。',
-      showControl: false
-    }
+    ...createCommonGates('西校舎')
   };
 
   const roomsEast = {
@@ -418,48 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
       code: '0',
       successMsg: '【扉ロック解除！】\nキーボックスが開き、「マスターキーB」を手に入れた！\n玄関前への道が開いたよ。'
     },
-    'gate1': {
-      title: '東校舎 玄関前 ／ 屋内結節エリア',
-      icon: '🚪',
-      clueLabel: '玄関前の鍵ボックス：',
-      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
-      clueColor: 'var(--color-neon-purple)',
-      instruction: '扉を抜けた先に広がる屋内結節エリアだ。<br>外に出るには別の鍵が必要のようだ…',
-      showControl: true,
-      code: '0',
-      successMsg: '【玄関前ロック解除！】\n鍵ボックスが開いた！玄関ゲートの鍵を入手した。'
-    },
-    'gate2': {
-      title: '東校舎 玄関 ／ 最終出口ゲート',
-      icon: '🚪',
-      clueLabel: '玄関チェーンロック：',
-      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
-      clueColor: 'var(--color-neon-purple)',
-      instruction: '屋外へとつながる大きな玄関チェーンロックだ。<br>最後の屋外ゲートを解除すれば、正門へ到達できる！',
-      showControl: true,
-      code: '0',
-      successMsg: '【玄関ロック解除！】\n大きなチェーンが外れた！正門への道が開けたよ。'
-    },
-    'gate3': {
-      title: '東校舎 正門 ／ 完全脱出口',
-      icon: '🚩',
-      clueLabel: '正門電子ロック：',
-      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
-      clueColor: 'var(--color-neon-red)',
-      instruction: '最後の防壁だ！正門の電子ロックを解除すれば、いよいよ脱出成功だ！<br>お互いが正門コードを入力して、一緒にゲートを開こう！',
-      showControl: true,
-      code: '0',
-      successMsg: '【正門解除！】\n東側の正門が開いた！脱出まであと一歩！'
-    },
-    'default': {
-      title: '東校舎 実習室 ／ 暗闇の部屋',
-      icon: '🚪',
-      clueLabel: '施錠中：',
-      clueHtml: '',
-      clueColor: 'var(--color-text-muted)',
-      instruction: '鍵がかかっているようだ。今はまだ探索する意味がない。他の部屋を調べよう。',
-      showControl: false
-    }
+    ...createCommonGates('東校舎')
   };
 
   // 部屋が属する階層（Floor）を取得
@@ -474,10 +453,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- マップの描画・更新ロジック ---
   function renderMapHelper(selector, roomNames, defaultLockMsg, unlockedFloor, playerKey) {
+    const currentRoom = playerKey === 'a' ? currentRoomA : currentRoomB;
+
     document.querySelectorAll(`${selector} .map-cell`).forEach(cell => {
       const roomKey = cell.getAttribute('data-room');
       const floor = getRoomFloor(roomKey);
       
+      // 現在地のハイライト（.active-room）を更新
+      if (roomKey === currentRoom) {
+        cell.classList.add('active-room');
+      } else {
+        cell.classList.remove('active-room');
+      }
+
       if (floor >= unlockedFloor) {
         cell.classList.remove('locked-cell');
         cell.disabled = false;
@@ -495,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.classList.remove('cleared-cell');
         cell.disabled = true;
         cell.innerHTML = `<span>${defaultLockMsg}</span>`;
-        cell.classList.remove('active-room');
+        // active-roomの削除は上で行っているため不要
       }
     });
   }
@@ -526,111 +514,120 @@ document.addEventListener('DOMContentLoaded', () => {
     const control = document.getElementById(`control-${player}`);
     const input = document.getElementById(`input-code-${player}`);
     const submitBtn = document.getElementById(`btn-submit-${player}`);
+    const panelBody = visual.closest('.panel-body');
 
-    const titleParts = data.title.split(' ／ ');
-    const locationName = titleParts[0];
-    const puzzleTitleName = titleParts[1] || '';
-
-    roleText.textContent = locationName;
-
-    const puzzleTitleEl = document.getElementById(`puzzle-title-${player}`);
-    if (puzzleTitleEl) {
-      puzzleTitleEl.textContent = puzzleTitleName;
-      // 謎タイトルが存在しない場合は要素を非表示にして余計な空間を作らないようにする
-      if (puzzleTitleName) {
-        puzzleTitleEl.style.display = 'block';
-      } else {
-        puzzleTitleEl.style.display = 'none';
-      }
+    // モーションアニメーション（フェードアウト）
+    if (panelBody) {
+      panelBody.classList.add('room-fade-out');
     }
 
-    visual.querySelector('.icon-placeholder').textContent = data.icon;
-    visual.querySelector('.clue-label').textContent = data.clueLabel;
-    
-    const clueEl = visual.querySelector('.puzzle-clue');
-    clueEl.innerHTML = data.clueHtml;
-    clueEl.style.color = data.clueColor;
-    clueEl.style.textShadow = `0 0 10px ${data.clueColor}`;
-    
-    visual.querySelector('.instruction-text').innerHTML = data.instruction;
+    // フェードアウトの完了を待ってからDOMを書き換える
+    setTimeout(() => {
+      const titleParts = data.title.split(' ／ ');
+      const locationName = titleParts[0];
+      const puzzleTitleName = titleParts[1] || '';
 
-    if (data.showControl) {
-      control.style.display = 'flex';
-      const isCleared = clearedRooms[`${player}-${roomKey}`];
-      if (isCleared) {
-        input.value = data.code;
-        input.disabled = true;
-        input.style.borderColor = data.clueColor;
-        submitBtn.disabled = true;
-        submitBtn.textContent = '解除済み';
-        submitBtn.classList.add('btn-cleared');
-        submitBtn.style.background = `${data.clueColor}33`;
+      roleText.textContent = locationName;
+
+      // 背景画像の動的切り替え
+      const screenEl = document.getElementById(`player-${player}-screen`);
+      if (['gate1', 'gate2', 'gate3'].includes(roomKey)) {
+        screenEl.style.backgroundImage = "url('assets/bg_entrance.png')";
+      } else if (roomKey.startsWith('stairs-')) {
+        screenEl.style.backgroundImage = "url('assets/bg_stairs.png')";
+      } else if (roomKey === 'entrance' || roomKey === 'janitor') {
+        screenEl.style.backgroundImage = "url('assets/bg_firedoor.png')";
       } else {
-        input.value = '';
-        input.disabled = false;
-        input.style.borderColor = '';
-        submitBtn.disabled = false;
-        submitBtn.textContent = '回答';
-        submitBtn.classList.remove('btn-cleared');
-        submitBtn.style.background = '';
+        screenEl.style.backgroundImage = player === 'a' ? "url('assets/bg_classroom.png')" : "url('assets/bg_science.png')";
       }
-    } else {
-      control.style.display = 'none';
-    }
+
+      const puzzleTitleEl = document.getElementById(`puzzle-title-${player}`);
+      if (puzzleTitleEl) {
+        puzzleTitleEl.textContent = puzzleTitleName;
+        // 謎タイトルが存在しない場合は要素を非表示にして余計な空間を作らないようにする
+        if (puzzleTitleName) {
+          puzzleTitleEl.style.display = 'block';
+        } else {
+          puzzleTitleEl.style.display = 'none';
+        }
+      }
+
+      visual.querySelector('.icon-placeholder').textContent = data.icon;
+      visual.querySelector('.clue-label').textContent = data.clueLabel;
+      
+      const clueEl = visual.querySelector('.puzzle-clue');
+      clueEl.innerHTML = data.clueHtml;
+      clueEl.style.color = data.clueColor;
+      clueEl.style.textShadow = `0 0 10px ${data.clueColor}`;
+      
+      visual.querySelector('.instruction-text').innerHTML = data.instruction;
+
+      if (data.showControl) {
+        control.style.display = 'flex';
+        const isCleared = clearedRooms[`${player}-${roomKey}`];
+        if (isCleared) {
+          input.value = data.code;
+          input.disabled = true;
+          input.style.borderColor = data.clueColor;
+          submitBtn.disabled = true;
+          submitBtn.textContent = '解除済み';
+          submitBtn.classList.add('btn-cleared');
+          submitBtn.style.background = `${data.clueColor}33`;
+        } else {
+          input.value = '';
+          input.disabled = false;
+          input.style.borderColor = '';
+          submitBtn.disabled = false;
+          submitBtn.textContent = '解答';
+          submitBtn.classList.remove('btn-cleared');
+          submitBtn.style.background = '';
+        }
+      } else {
+        control.style.display = 'none';
+      }
+
+      // DOM書き換え後、フェードイン
+      if (panelBody) {
+        panelBody.classList.remove('room-fade-out');
+      }
+    }, 250); // 250ms待つ
   }
 
   // --- 階段・扉・玄関のロック解除判定 ---
-  function checkStairsUnlock(player, roomKey) {
-    if (player === 'a') {
-      if (roomKey === 'stairs-3f') {
-        unlockedFloorA = 2;
-        showCustomAlert('【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、西校舎の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。');
-      } else if (roomKey === 'stairs-2f') {
-        unlockedFloorA = 1;
-        showCustomAlert('【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、西校舎の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！');
-      } else if (roomKey === 'entrance') {
-        unlockedFloorA = 0;
-        showCustomAlert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！');
-        // 最終局面突入：BGMを緊迫モードに切り替え！
-        bgm.switchToTensionMode();
-      } else if (roomKey === 'gate1') {
-        showCustomAlert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！');
-      } else if (roomKey === 'gate2') {
-        showCustomAlert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！');
-      } else if (roomKey === 'gate3') {
-        checkGameClear();
-      }
-    } else if (player === 'b') {
-      if (roomKey === 'stairs-3f') {
-        unlockedFloorB = 2;
-        showCustomAlert('【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、東校舎の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。');
-      } else if (roomKey === 'stairs-2f') {
-        unlockedFloorB = 1;
-        showCustomAlert('【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、東校舎の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！');
-      } else if (roomKey === 'janitor') {
-        unlockedFloorB = 0;
-        showCustomAlert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！');
-        // 最終局面突入：BGMを緊迫モードに切り替え！
-        bgm.switchToTensionMode();
-      } else if (roomKey === 'gate1') {
-        showCustomAlert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！');
-      } else if (roomKey === 'gate2') {
-        showCustomAlert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！');
-      } else if (roomKey === 'gate3') {
-        checkGameClear();
-      }
+  function checkStairsUnlock(player, roomKey, callback = null) {
+    const schoolName = player === 'a' ? '西校舎' : '東校舎';
+
+    if (roomKey === 'stairs-3f') {
+      if (player === 'a') unlockedFloorA = 2; else unlockedFloorB = 2;
+      showCustomAlert(`【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、${schoolName}の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。`, callback);
+    } else if (roomKey === 'stairs-2f') {
+      if (player === 'a') unlockedFloorA = 1; else unlockedFloorB = 1;
+      showCustomAlert(`【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、${schoolName}の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！`, callback);
+    } else if (roomKey === 'entrance' || roomKey === 'janitor') {
+      if (player === 'a') unlockedFloorA = 0; else unlockedFloorB = 0;
+      showCustomAlert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！', callback);
+      bgm.switchToTensionMode(); // 最終局面突入
+    } else if (roomKey === 'gate1') {
+      showCustomAlert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！', callback);
+    } else if (roomKey === 'gate2') {
+      showCustomAlert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！', callback);
+    } else if (roomKey === 'gate3') {
+      checkGameClear(callback);
+    } else if (callback) {
+      callback(); // 念のため
     }
     renderMap();
   }
 
   // --- 脱出判定（両者がgate3を解除でクリア） ---
-  function checkGameClear() {
+  function checkGameClear(callback = null) {
     if (clearedRooms['a-gate3'] && clearedRooms['b-gate3']) {
       const activeScreen = document.querySelector('.screen.active');
       const clearScreen = document.getElementById('clear-screen');
       switchScreen(activeScreen, clearScreen);
+      if (callback) callback();
     } else {
-      showCustomAlert('【正門解除中…】\n正門のロックは外れた！しかし、完全に脱出するにはもう一人のプレイヤーも「正門」のロックを解除する必要があるようだ…！');
+      showCustomAlert('【正門解除中…】\n正門のロックは外れた！しかし、完全に脱出するにはもう一人のプレイヤーも「正門」のロックを解除する必要があるようだ…！', callback);
     }
   }
 
@@ -657,26 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
   registerMapCells('#map-west', 'a', roomsWest, (key) => { currentRoomA = key; }, () => unlockedFloorA);
   registerMapCells('#map-east', 'b', roomsEast, (key) => { currentRoomB = key; }, () => unlockedFloorB);
 
-  // --- イベントリスナー（画面遷移） ---
-  btnStartGame.addEventListener('click', () => {
-    switchScreen(titleScreen, selectionScreen);
-  });
 
-  routePlayerA.addEventListener('click', () => {
-    switchScreen(selectionScreen, playerAScreen);
-    unlockedFloorA = 3;
-    currentRoomA = '3-1';
-    renderMap();
-    updateRoomUI('a', roomsWest['3-1'], '3-1');
-  });
-
-  routePlayerB.addEventListener('click', () => {
-    switchScreen(selectionScreen, playerBScreen);
-    unlockedFloorB = 3;
-    currentRoomB = 'music';
-    renderMap();
-    updateRoomUI('b', roomsEast['music'], 'music');
-  });
 
   // --- 共通送信処理 ---
   function handleCodeSubmit(playerKey, getCurrentRoomKey, roomsMap, inputEl) {
@@ -687,24 +665,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const code = inputEl.value.trim();
     if (code === roomData.code) {
       bgm.playCorrect(); // ピンポン音
-      showCustomAlert(roomData.successMsg);
       clearedRooms[`${playerKey}-${roomKey}`] = true;
       updateRoomUI(playerKey, roomData, roomKey);
       renderMap();
       
+      // 自動移動のためのコールバック
+      const nextRoomMap = playerKey === 'a' ? nextRoomsA : nextRoomsB;
+      const nextRoomKey = nextRoomMap[roomKey];
+      
+      const moveToNextRoom = () => {
+        if (nextRoomKey) {
+          if (playerKey === 'a') {
+            currentRoomA = nextRoomKey;
+            updateRoomUI('a', roomsWest[nextRoomKey], nextRoomKey);
+          } else {
+            currentRoomB = nextRoomKey;
+            updateRoomUI('b', roomsEast[nextRoomKey], nextRoomKey);
+          }
+          renderMap();
+        }
+      };
+      
       // 階段・扉・玄関前・玄関・正門の判定
       if (roomKey.startsWith('stairs-') || roomKey === 'entrance' || roomKey === 'janitor'
           || roomKey === 'gate1' || roomKey === 'gate2' || roomKey === 'gate3') {
-        checkStairsUnlock(playerKey, roomKey);
+        checkStairsUnlock(playerKey, roomKey, moveToNextRoom);
+      } else {
+        showCustomAlert(roomData.successMsg, moveToNextRoom);
       }
     } else {
       bgm.playWrong(); // ブブー音
-      showCustomAlert('【エラー】\nコードが違います。不気味な音が響き渡った。');
-      inputEl.value = '';
-      inputEl.style.borderColor = 'var(--color-neon-red)';
+      inputEl.classList.add('input-error');
+      
+      // アニメーション完了後にクラスを外す
       setTimeout(() => {
-        inputEl.style.borderColor = '';
-      }, 1000);
+        inputEl.classList.remove('input-error');
+      }, 500);
     }
   }
 
@@ -738,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
       this.nextNoteTime = 0.0;
       this.timerId = null;
       this.oscillators = [];
-      this.defaultVolume = 0.3; // 音量0.3
+      this.defaultVolume = 0.8; // 音量0.8（ユーザー要望により引き上げ）
       
       // 通常時 (C - G - Am - F)
       this.normalChords = [
@@ -1197,28 +1193,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const bgm = new NightSchoolBGM();
 
-  // タイトル画面のスタートボタンでBGM開始
+  // --- 全イベントリスナーの登録 ---
+
+  // タイトル画面のスタートボタンで画面遷移とBGM開始
   btnStartGame.addEventListener('click', () => {
+    switchScreen(titleScreen, selectionScreen);
     bgm.start();
   });
 
-  // 直接ゲーム画面（西棟・東棟）に入った場合でもBGMを開始する
-  // 同時に、すでに玄関前がアンロックされている進行度なら最初から緊迫BGMに設定する
+  // キャラクター選択イベント（画面遷移、初期化、BGM開始とモード設定）
   routePlayerA.addEventListener('click', () => {
+    switchScreen(selectionScreen, playerAScreen);
+    unlockedFloorA = 3;
+    currentRoomA = '3-1';
+    renderMap();
+    updateRoomUI('a', roomsWest['3-1'], '3-1');
+    
     bgm.start();
-    if (unlockedFloorA === 0) {
-      bgm.switchToTensionMode();
-    } else {
-      bgm.switchToNormalMode();
-    }
+    if (unlockedFloorA === 0) bgm.switchToTensionMode();
+    else bgm.switchToNormalMode();
   });
+
   routePlayerB.addEventListener('click', () => {
+    switchScreen(selectionScreen, playerBScreen);
+    unlockedFloorB = 3;
+    currentRoomB = 'music';
+    renderMap();
+    updateRoomUI('b', roomsEast['music'], 'music');
+
     bgm.start();
-    if (unlockedFloorB === 0) {
-      bgm.switchToTensionMode();
-    } else {
-      bgm.switchToNormalMode();
-    }
+    if (unlockedFloorB === 0) bgm.switchToTensionMode();
+    else bgm.switchToNormalMode();
   });
 
   // ミュート切り替えイベント登録
@@ -1278,4 +1283,5 @@ document.addEventListener('DOMContentLoaded', () => {
       showHintAlert('b', currentRoomB, roomsEast);
     });
   }
+
 });

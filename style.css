@@ -60,9 +60,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden; /* 画面全体のスクロールを完全に禁止し1画面固定にする */
 }
 
 .screen.active {
@@ -161,7 +159,7 @@ body {
 
 .game-title {
   font-family: var(--font-title);
-  font-size: clamp(2.2rem, 7vw, 4.8rem);
+  font-size: clamp(3rem, 10vw, 6.5rem);
   font-weight: normal;
   letter-spacing: clamp(0.1rem, 1vw, 0.4rem);
   white-space: nowrap;
@@ -190,19 +188,19 @@ body {
 }
 
 .btn-start {
-  font-family: var(--font-body);
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-family: var(--font-title); /* 夜の学校の雰囲気に合わせたフォント */
+  font-size: clamp(1.2rem, 2vw, 1.6rem); /* ボタンの文字を少し小さめに */
+  font-weight: normal;
   letter-spacing: 0.3rem;
   color: #fff;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 1.2rem 3rem;
+  background: rgba(10, 5, 20, 0.8); /* 深い夜の闇のようなダークガラス背景 */
+  border: 1px solid rgba(157, 78, 223, 0.4); /* 妖しく光る紫の枠線 */
+  padding: 1rem 3rem; /* ボタンの余白も少し小さくして控えめに */
   border-radius: 4px;
   cursor: pointer;
   backdrop-filter: blur(10px);
   transition: var(--transition-smooth);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 20px rgba(157, 78, 223, 0.2), inset 0 0 10px rgba(0, 0, 0, 0.8); /* 内外の影で立体感と発光を表現 */
   position: relative;
   overflow: hidden;
 }
@@ -223,11 +221,11 @@ body {
 }
 
 .btn-start:hover {
-  background: rgba(157, 78, 223, 0.2);
+  background: rgba(157, 78, 223, 0.3);
   border-color: var(--color-neon-purple);
-  box-shadow: 0 0 30px rgba(157, 78, 223, 0.6);
+  box-shadow: 0 0 40px rgba(157, 78, 223, 0.8), inset 0 0 15px rgba(157, 78, 223, 0.4);
   transform: translateY(-3px);
-  text-shadow: 0 0 10px #fff;
+  text-shadow: 0 0 15px #fff, 0 0 5px var(--color-neon-purple);
 }
 
 .btn-start:active {
@@ -404,7 +402,24 @@ body {
   padding: 2rem 3rem 1rem 3rem; /* 上部(padding-top: 2rem)に空間を設ける */
   gap: 1.5rem; /* 横並びが近づいたときの最小空間を確保 */
   z-index: 5;
-  background: linear-gradient(to bottom, rgba(5, 5, 10, 0.9), transparent);
+  background: transparent; /* 背景グラデーションを透明にし、ゲーム背景画像をそのまま見せる */
+}
+
+.hud-left-group {
+  display: flex;
+  flex-direction: column; /* 縦並びにしてロゴの下に教室名を表示 */
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.mini-logo {
+  font-family: var(--font-title);
+  font-size: 1.5rem; /* タイトル名は少し大きめを維持 */
+  font-weight: normal;
+  letter-spacing: 0.2rem;
+  color: #fff;
+  text-shadow: 0 0 10px var(--color-neon-purple);
+  white-space: nowrap;
 }
 
 .player-indicator {
@@ -414,11 +429,11 @@ body {
 }
 
 .status-dot {
-  width: 18px;
-  height: 18px;
+  width: 24px; /* 18pxから24pxに大きくする */
+  height: 24px;
   border-radius: 50%;
   background-color: var(--color-neon-blue);
-  box-shadow: 0 0 15px var(--color-neon-blue), 0 0 5px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 20px var(--color-neon-blue), 0 0 8px rgba(255, 255, 255, 0.8);
   flex-shrink: 0;
 }
 
@@ -429,7 +444,7 @@ body {
 
 .player-role {
   font-family: var(--font-title);
-  font-size: 1.6rem;
+  font-size: 2.1rem; /* 1.6remから2.1remに大きく表示 */
   font-weight: normal;
   letter-spacing: 0.15rem;
 }
@@ -482,12 +497,12 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   width: 100%;
-  max-width: 900px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
-  padding: 1rem; /* 四方に固定で1remの余白を設ける */
+  /* 謎問題パネル自体の高さを親要素に合わせる */
+  height: 100%; 
 }
 
 /* Blue borders for Player A panel */
@@ -521,14 +536,22 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  justify-content: center; /* 謎問題全体を上下中央に配置する */
+  padding: 0.5rem 2rem 2rem 2rem; /* 上のパディングを狭める */
   gap: 1.5rem;
+  overflow: hidden; /* スクロールを禁止して1画面に収める */
+  transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out; /* マップ移動用アニメーション */
+}
+
+/* マップ移動時のフェードアウト・縮小クラス */
+.room-fade-out {
+  opacity: 0;
+  transform: scale(0.95);
 }
 
 .puzzle-visual {
-  flex: 1;
   width: 100%;
-  background: rgba(0, 0, 0, 0.4);
+  background: transparent;
   border: none;
   border-radius: 4px;
   display: flex;
@@ -539,6 +562,8 @@ body {
   gap: 1rem;
   text-align: center;
   padding: 0;
+  flex: 1; /* 親要素の空間を埋める */
+  min-height: 0; /* 画像が大きい時に自動縮小させるために必須 */
 }
 
 .puzzle-visual .icon-placeholder,
@@ -548,15 +573,31 @@ body {
 }
 
 .game-container-layout {
-  display: grid;
-  grid-template-columns: 380px 1fr 380px; /* 左マップ・中メイン・右スペース（またはその逆） */
-  justify-content: center;
-  align-items: end; /* 全ての下端をy軸で綺麗に揃える */
-  padding-top: 3vh;
-  gap: 2rem; /* カラム間の余白 */
-  width: 98%;
-  max-width: 1700px;
-  margin: 0 auto;
+  display: flex; /* GridからFlexに変更して完全な中央寄せを実現 */
+  justify-content: center; /* 中央揃え */
+  align-items: end; /* マップと解答欄（謎パネル）の下端を揃える */
+  position: relative; /* マップを絶対配置するための基準 */
+  height: calc(100vh - 160px);
+  max-height: calc(100dvh - 160px);
+  padding-top: 1rem;
+  padding-bottom: 4rem; /* さらに20px上に移動（元2.75rem） */
+  gap: 2rem;
+  width: 100%; /* 画面幅いっぱいまで広げる */
+  max-width: none; /* 上限を撤廃して壁際まで使えるようにする */
+  margin: 0;
+}
+
+/* マップを画面端（壁際）に絶対配置し、謎問題が完全に中央に来るようにする */
+#player-a-screen .map-container {
+  position: absolute;
+  left: 30px; /* 左から10px右に移動（元20px） */
+  bottom: 4rem; /* game-container-layout の padding-bottom と揃える */
+}
+
+#player-b-screen .map-container {
+  position: absolute;
+  right: 30px; /* 右から10px左に移動（元20px） */
+  bottom: 4rem;
 }
 
 .puzzle-main-content {
@@ -565,7 +606,10 @@ body {
   align-items: center;
   gap: 1.5rem;
   width: 100%;
-  max-width: 900px;
+  height: 100%;
+  max-width: 1000px;
+  align-self: stretch; /* 謎パネルは上から下まで高さをいっぱい使う */
+  margin: 0 auto; /* 確実に左右中央に配置する */
 }
 
 .map-placeholder {
@@ -579,9 +623,22 @@ body {
   font-size: clamp(1.2rem, 1.5vw + 0.5rem, 1.8rem);
   color: #fff;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  padding-bottom: 0.8rem; /* タイトル文字と横線の間の余白 */
+  margin-bottom: 1rem; /* 横線と謎画像の間の余白 */
   text-align: center;
   width: 100%;
+  background-color: transparent !important; /* 黒背景が出ないように強制透明化 */
+  box-shadow: none !important; /* コンテナ全体にかかる影（背景に見える原因）を削除 */
+}
+
+/* テーマ色でタイトルの下に横線を引く */
+#player-a-screen .puzzle-room-title {
+  border-bottom: 2px solid var(--color-neon-blue);
+}
+
+#player-b-screen .puzzle-room-title {
+  border-bottom: 2px solid var(--color-neon-green);
 }
 
 .puzzle-clue {
@@ -594,13 +651,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1; /* 空間を埋める */
+  min-height: 0; /* 画像縮小を許可 */
 }
 
 .puzzle-clue img {
-  max-width: 100%;
-  max-height: 480px;
-  width: 100%;
-  height: 100%;
+  max-width: 95%; /* 100%から95%にしてほんの少し小さくする */
+  max-height: 95%; /* 同じく少し小さく */
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -631,32 +690,19 @@ body {
   100% { transform: scale(1.05); opacity: 0.7; }
 }
 
-.puzzle-control-outside {
+.puzzle-control-inside {
   width: 100%;
-  max-width: 900px;
-  background: rgba(5, 5, 10, 0.75);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 1.5rem 2rem;
+  padding-top: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   z-index: 6;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-#control-a {
-  border-color: rgba(0, 242, 254, 0.25);
-  box-shadow: 0 5px 15px rgba(0, 242, 254, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
-}
+#control-a {}
 
-#control-b {
-  border-color: rgba(57, 255, 20, 0.25);
-  box-shadow: 0 5px 15px rgba(57, 255, 20, 0.05), 0 10px 30px rgba(0, 0, 0, 0.5);
-}
+#control-b {}
 
 .puzzle-input-group-centered {
   display: flex;
@@ -686,14 +732,24 @@ body {
   box-shadow: 0 0 10px rgba(157, 78, 223, 0.3);
 }
 
+#player-a-screen .puzzle-input {
+  border: 1px solid rgba(0, 242, 254, 0.6);
+  box-shadow: 0 0 5px rgba(0, 242, 254, 0.1);
+}
+
 #player-a-screen .puzzle-input:focus {
   border-color: var(--color-neon-blue);
-  box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+}
+
+#player-b-screen .puzzle-input {
+  border: 1px solid rgba(57, 255, 20, 0.6);
+  box-shadow: 0 0 5px rgba(57, 255, 20, 0.1);
 }
 
 #player-b-screen .puzzle-input:focus {
   border-color: var(--color-neon-green);
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+  box-shadow: 0 0 12px rgba(57, 255, 20, 0.4);
 }
 
 .btn-submit {
@@ -766,7 +822,7 @@ body {
 
 .map-header {
   font-family: var(--font-title);
-  font-size: 1rem;
+  font-size: 1.25rem; /* タイトルを少し大きく（元1rem） */
   letter-spacing: 0.15rem;
   text-align: center;
   color: var(--color-text-muted);
@@ -789,24 +845,20 @@ body {
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 0.6rem;
-  height: 150px;
-  transition: height var(--transition-normal);
+  /* heightの固定指定を削除して、セルに合わせて自動で枠が広がるように修正 */
 }
 
 /* 扉正解後: gate1登場（一段階目） */
 .map-grid.has-gate1 {
   grid-template-rows: repeat(4, 1fr);
-  height: 200px;
 }
 /* gate2登場（二段階目） */
 .map-grid.has-gate2 {
   grid-template-rows: repeat(5, 1fr);
-  height: 250px;
 }
 /* gate3登場（三段階目） */
 .map-grid.has-gate3 {
   grid-template-rows: repeat(6, 1fr);
-  height: 300px;
 }
 
 /* 初期状態は全て非表示 */
@@ -834,16 +886,18 @@ body {
 
 .map-cell {
   position: relative;
-  background: #000000;
+  background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 2px;
   color: var(--color-text-muted);
   font-family: var(--font-body);
-  font-size: 0.8rem;
-  padding-top: 24px; /* 文字をさらに5px下に移動 */
+  font-size: 0.9rem; /* 0.95remから0.9remに微調整 */
+  font-weight: bold; /* フォントを太字にする */
+  height: 48px; /* 玄関追加時に他のセルサイズが変動しないように高さを固定 */
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* centerからflex-startに変更してpadding-topを有効にする */
+  align-items: flex-end; /* テキストを下揃えに */
+  padding-bottom: 5px; /* 下から5pxの位置で固定 */
   cursor: pointer;
   outline: none;
   transition: var(--transition-fast);
@@ -932,8 +986,8 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
   /* viewBox=0 0 150 100 でx座標を1.5倍にスケールアップ → 横に1.5倍引き伸ばし */
-  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2300f2fe33）にする */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%23000000' stroke='%2300f2fe33' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2300f2fe33）にする。背景を親コンテナと同じ暗闇色(%2305050a)にして黒塗りを解消 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%2305050a' stroke='%2300f2fe33' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
   transition: var(--transition-fast);
 }
 
@@ -960,8 +1014,8 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
   /* viewBox=0 0 150 100 でx座標を1.5倍にスケールアップ → 横に1.5倍引き伸ばし */
-  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2339ff1433）にする */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%23000000' stroke='%2339ff1433' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2339ff1433）にする。背景を親コンテナと同じ暗闇色(%2305050a)にして黒塗りを解消 */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%2305050a' stroke='%2339ff1433' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
   transition: var(--transition-fast);
 }
 
@@ -1036,6 +1090,20 @@ body {
   pointer-events: none !important;
   animation: none !important;
   filter: grayscale(100%) brightness(0.4);
+}
+
+/* 不正解時のエラーアニメーション */
+.input-error {
+  animation: shake 0.4s ease-in-out;
+  border-color: #ff3333 !important;
+  box-shadow: 0 0 15px rgba(255, 51, 51, 0.5) !important;
+  background: rgba(255, 51, 51, 0.1) !important;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
 }
 
 /* 未開放の階段は暗い色合いのSVGアイコンを適用する（ジグザグ階段の形状をキープする） */
@@ -1206,15 +1274,40 @@ body {
   z-index: 10;
 }
 
+/* MEMOボタン（サイバーピンク） - アイコン風 */
+.btn-memo {
+  background: rgba(255, 51, 102, 0.05);
+  border: 1px solid rgba(255, 51, 102, 0.25);
+  color: #ff3366;
+  width: 44px;  /* アイコン用に正方形にする */
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem; /* 絵文字を大きく表示 */
+  border-radius: 50%; /* 円形にする */
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+  text-shadow: 0 0 5px rgba(255, 51, 102, 0.3);
+  box-shadow: 0 0 8px rgba(255, 51, 102, 0.05);
+}
+
+.btn-memo:hover {
+  background: rgba(255, 51, 102, 0.15);
+  border-color: #ff3366;
+  box-shadow: 0 0 12px rgba(255, 51, 102, 0.3);
+}
+
 /* HINTボタン（サイバーゴールドイエロー） */
 .btn-hint {
   background: rgba(255, 170, 0, 0.05);
   border: 1px solid rgba(255, 170, 0, 0.25);
   color: #ffaa00;
-  padding: 0.4rem 0; /* 左右パディングを0にして固定幅で揃える */
-  width: 120px;      /* HINTボタンとBGMボタンの横幅を統一 */
+  padding: 0.6rem 0; /* ボックスの上下余白を大きく調整 */
+  width: 150px;      /* 横幅を120pxから150pxに拡大 */
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem; /* 文字も少し拡大 */
   border-radius: 4px;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -1234,10 +1327,10 @@ body {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--color-text-muted);
-  padding: 0.4rem 0; /* 左右パディングを0にして固定幅で揃える */
-  width: 120px;      /* HINTボタンとBGMボタンの横幅を統一 */
+  padding: 0.6rem 0; /* ボックスの上下余白を大きく調整 */
+  width: 150px;      /* 横幅を120pxから150pxに拡大 */
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.9rem; /* 文字も少し拡大 */
   border-radius: 4px;
   cursor: pointer;
   z-index: 10;
@@ -1318,15 +1411,54 @@ body {
 }
 
 /* ==========================================================================
-   5. RESPONSIVE DESIGN (スマホ・タブレット対応)
+   5. RESPONSIVE DESIGN (スマホ・タブレット・小型PC対応)
    ========================================================================== */
 
+/* 幅1500px以下：マップと謎問題が重なるのを防ぐために縦並びに切り替え */
+@media (max-width: 1500px) {
+  .screen {
+    overflow-y: auto !important; /* スクロールを許可 */
+  }
+
+  .game-container-layout {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    height: auto !important;
+    max-height: none !important;
+    padding-top: 2rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  .puzzle-main-content {
+    order: 1 !important; /* 謎問題を上に配置 */
+    margin-bottom: 2rem !important;
+  }
+
+  /* マップの絶対配置を解除して、謎問題の下に配置する */
+  #player-a-screen .map-container,
+  #player-b-screen .map-container {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    order: 2 !important; /* マップを下に配置 */
+    margin: 0 auto 30px auto !important; /* 画面下端からの余白（30px）を確保 */
+  }
+}
+
 @media (max-width: 992px) {
+  .screen {
+    overflow-y: auto !important; /* スマホ時は画面全体のスクロールを許可する */
+  }
+
   .game-container-layout {
     grid-template-columns: 1fr !important; /* 1カラムに並び替える */
     align-items: center !important;
     gap: 1.5rem !important;
     padding-top: 1vh !important;
+    height: auto !important; /* スマホ時は高さを固定しない */
+    max-height: none !important;
   }
 
   .map-placeholder {
@@ -1336,19 +1468,19 @@ body {
   .map-container {
     width: 100% !important;
     max-width: 500px !important;
-    order: 2 !important; /* マップを下に配置 */
-    margin: 0 auto !important; /* 画面中央に配置 */
+    order: 3 !important; /* マップを一番下(3)に配置 */
+    margin: 0 auto 30px auto !important; /* 画面下端からの余白（30px）を確保 */
   }
 
   .puzzle-main-content {
     width: 100% !important;
-    order: 1 !important; /* 謎解きエリアを上に配置 */
+    order: 1 !important; /* 謎解きエリアを一番上(1)に配置 */
     margin: 0 auto !important; /* 画面中央に配置 */
   }
 
   /* 画面が崩れないようにFlex縦並びに固定 */
-  .player-a-screen .game-container-layout,
-  .player-b-screen .game-container-layout {
+  #player-a-screen .game-container-layout,
+  #player-b-screen .game-container-layout {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -1369,9 +1501,14 @@ body {
     align-items: center !important;
   }
 
-  .hud-title {
-    font-size: 0.95rem !important;
+  .player-role {
+    font-size: 1.25rem !important; /* スマホ時も教室名サイズを大きく表示 */
     text-align: center !important;
+  }
+
+  .status-dot {
+    width: 20px !important;
+    height: 20px !important;
   }
 
   .hud-controls {
@@ -1382,9 +1519,9 @@ body {
 
   .btn-mute,
   .btn-hint {
-    padding: 0.3rem 0 !important; /* 左右パディングをリセット */
-    font-size: 0.75rem !important;
-    width: 105px !important;       /* スマホ時の固定幅を統一 */
+    padding: 0.5rem 0 !important;   /* 上下パディングを大きく調整 */
+    font-size: 0.8rem !important;   /* 文字サイズを大きく調整 */
+    width: 125px !important;        /* スマホ時の横幅を105pxから125pxに拡大 */
     text-align: center !important;
   }
 
@@ -1412,7 +1549,7 @@ body {
   }
 
   .panel-body {
-    padding: 1rem !important;
+    padding: 0.2rem 1rem 1rem 1rem !important; /* タイトル上の空間をさらに狭める */
     gap: 1rem !important;
   }
 
@@ -1444,16 +1581,13 @@ body {
   .map-cell {
     height: 44px !important;
     font-size: 0.75rem !important;
-    padding-top: 19px !important; /* スマホ用文字をさらに押し下げ */
     padding-left: 0.2rem !important;
     padding-right: 0.2rem !important;
-    padding-bottom: 0.2rem !important;
-    align-items: flex-start !important;
+    padding-bottom: 5px !important; /* スマホ時も下から5pxで固定 */
+    align-items: flex-end !important; /* テキストを下揃えに */
   }
 
-  .map-cell[data-room^="stairs-"] {
-    padding-top: 19px !important; /* 階段文字の表示高さを他の教室と完全に揃える */
-  }
+  /* 階段セルの特別指定は全体のflex-endで統一されたため削除 */
 
   .map-cell[data-room^="gate"] {
     height: 36px !important;
@@ -1499,7 +1633,7 @@ body {
     padding: 1.5rem !important;
   }
 
-  /* 入力エリアと回答ボタンの極小画面対応 */
+  /* 入力エリアと解答ボタンの極小画面対応 */
   .puzzle-input {
     flex: 1 !important;
     min-width: 80px !important;
@@ -1589,5 +1723,69 @@ body {
 
   .route-name {
     font-size: 1.3rem !important;
+  }
+}
+
+/* =========================================
+   エンディング（GAMECLEAR）演出
+   ========================================= */
+.clear-whiteout {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  background-color: #fff !important;
+  background-image: none !important;
+  animation: whiteOutAnim 4s ease-in forwards !important;
+  z-index: 100 !important;
+}
+
+@keyframes whiteOutAnim {
+  0% { background-color: rgba(255, 255, 255, 0); opacity: 0; }
+  30% { background-color: rgba(255, 255, 255, 1); opacity: 1; }
+  100% { background-color: #fff; opacity: 1; }
+}
+
+.clear-content {
+  z-index: 105;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-clear-text {
+  color: #111;
+  font-size: 5rem;
+  letter-spacing: 0.8rem;
+  font-weight: bold;
+  opacity: 0;
+  animation: fadeInText 3s ease-in 2.5s forwards;
+}
+
+.fade-in-btn {
+  margin-top: 3rem !important;
+  opacity: 0;
+  animation: fadeInText 2s ease-in 4.5s forwards;
+  background-color: #111 !important;
+  color: #fff !important;
+  border: 1px solid #333 !important;
+  text-shadow: none !important;
+}
+
+.fade-in-btn:hover {
+  background-color: #333 !important;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5) !important;
+}
+
+@keyframes fadeInText {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .game-clear-text {
+    font-size: 3rem;
+    letter-spacing: 0.4rem;
   }
 }
