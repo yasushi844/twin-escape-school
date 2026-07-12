@@ -32,6 +32,7 @@ body {
   font-family: var(--font-body);
   overflow: hidden;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   /* 画面の横幅に合わせてゲーム全体の基準文字サイズを13px〜16pxの間で滑らかに伸縮させる */
   font-size: clamp(13px, 0.35vw + 11.5px, 16px);
@@ -259,6 +260,7 @@ body {
 
 .selection-container {
   height: 85vh;
+  height: 85dvh;
   display: flex;
   width: 100%;
   z-index: 5;
@@ -463,6 +465,7 @@ body {
 /* Game Interface Body */
 .game-container {
   min-height: 85vh; /* 画面高さに応じた最低領域の確保 */
+  min-height: 85dvh;
   height: auto; /* はみ出しを防ぐため可変にする */
   display: flex;
   justify-content: center;
