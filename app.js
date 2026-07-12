@@ -16,6 +16,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputCodeB = document.getElementById('input-code-b');
   const btnSubmitB = document.getElementById('btn-submit-b');
 
+  // --- カスタムダイアログ（非ブロッキングモーダル）の取得と制御 ---
+  const customAlert = document.getElementById('custom-alert');
+  const customAlertMessage = document.getElementById('custom-alert-message');
+  const customAlertClose = document.getElementById('custom-alert-close');
+  const customAlertBtn = document.getElementById('custom-alert-btn');
+  let currentAlertCallback = null;
+
+  function showCustomAlert(message, callback = null) {
+    if (!customAlert || !customAlertMessage) {
+      // DOMがない場合のフォールバック
+      alert(message);
+      if (callback) callback();
+      return;
+    }
+    customAlertMessage.textContent = message;
+    currentAlertCallback = callback;
+    customAlert.classList.add('show');
+  }
+
+  function closeCustomAlert() {
+    if (customAlert) {
+      customAlert.classList.remove('show');
+    }
+    if (currentAlertCallback) {
+      const cb = currentAlertCallback;
+      currentAlertCallback = null;
+      cb();
+    }
+  }
+
+  if (customAlertClose) {
+    customAlertClose.addEventListener('click', closeCustomAlert);
+  }
+  if (customAlertBtn) {
+    customAlertBtn.addEventListener('click', closeCustomAlert);
+  }
+  if (customAlert) {
+    customAlert.addEventListener('click', (e) => {
+      if (e.target === customAlert) {
+        closeCustomAlert();
+      }
+    });
+  }
+
   // --- ゲーム進行状態 ---
   let unlockedFloorA = 3; // 西校舎の進行状態
   let unlockedFloorB = 3; // 東校舎の進行状態
@@ -192,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clueLabel: '最終脱出ゲートキー：',
       clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
       clueColor: 'var(--color-neon-red)',
-      instruction: '学校から脱出するための重いデジタル扉だ。<br>開けるには、西の「鍵A（1-1で入手）」と東の「鍵B（職員室で入手）」の組み合わせコードが必要だ。',
+      instruction: '学校から脱出するための重いデジタル扉だ。<br>開けるには、西の「鍵A（1-1で入手）」と東の「鍵B（職員室で入手）」の組み合わせコードが必要です。',
       showControl: true,
       code: '0',
       successMsg: '【扉ロック解除！】\nマスターキーAを回し、西側のロックを外した！玄関前への道が開いたよ。'
@@ -287,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
       successMsg: '【3階ゲートロック解除！】\n東校舎の3階階段のゲートが開いた！2階へ降りられるようになったよ。'
     },
     'science': {
-      title: '東校舎 理科室 ／ 怪しげな実験机',
+      title: '東校舎 理科室 ／ 役に立つ実験机',
       icon: '🧪',
       clueLabel: '机の上の実験装置パネル：',
       clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
@@ -322,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'stairs-2f': {
       title: '東校舎 2階階段 ／ 踊り場の電子錠',
       icon: '🪜',
-      clueLabel: '2階階段の非常ロック：',
+      clueLabel: '2階階段 of 非常ロック：',
       clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
       clueColor: 'var(--color-neon-green)',
       instruction: '1階へ降りる扉にロックがかかっている。理科室（Player B）の装置を起動して見つけた暗号式を計算しよう。',
@@ -336,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clueLabel: 'ダイヤル式金庫：',
       clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
       clueColor: 'var(--color-neon-green)',
-      instruction: '壁にはめ込まれた金庫のロックだ。解除コードは、1-1（Player A）の相方がヒントを持っているかもしれない。',
+      instruction: '壁にはめ込まれた金庫のロックだ。解除コードは、1-1（Player A）の相方が金庫の鍵コードの手がかりを持っているかもしれない。',
       showControl: true,
       code: '0',
       successMsg: '【金庫ロック解除！】\n金庫が開いた！中から「昇降口の鍵B」を手に入れた！\nさらにメモが入っている：「脱出コードは【0】だ」'
@@ -524,34 +568,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (player === 'a') {
       if (roomKey === 'stairs-3f') {
         unlockedFloorA = 2;
-        alert('【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、西校舎の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。');
+        showCustomAlert('【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、西校舎の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。');
       } else if (roomKey === 'stairs-2f') {
         unlockedFloorA = 1;
-        alert('【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、西校舎の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！');
+        showCustomAlert('【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、西校舎の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！');
       } else if (roomKey === 'entrance') {
         unlockedFloorA = 0;
-        alert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！');
+        showCustomAlert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！');
+        // 最終局面突入：BGMを緊迫モードに切り替え！
+        bgm.switchToTensionMode();
       } else if (roomKey === 'gate1') {
-        alert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！');
+        showCustomAlert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！');
       } else if (roomKey === 'gate2') {
-        alert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！');
+        showCustomAlert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！');
       } else if (roomKey === 'gate3') {
         checkGameClear();
       }
     } else if (player === 'b') {
       if (roomKey === 'stairs-3f') {
         unlockedFloorB = 2;
-        alert('【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、東校舎の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。');
+        showCustomAlert('【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、東校舎の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。');
       } else if (roomKey === 'stairs-2f') {
         unlockedFloorB = 1;
-        alert('【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、東校舎の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！');
+        showCustomAlert('【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、東校舎の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！');
       } else if (roomKey === 'janitor') {
         unlockedFloorB = 0;
-        alert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！');
+        showCustomAlert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！');
+        // 最終局面突入：BGMを緊迫モードに切り替え！
+        bgm.switchToTensionMode();
       } else if (roomKey === 'gate1') {
-        alert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！');
+        showCustomAlert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！');
       } else if (roomKey === 'gate2') {
-        alert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！');
+        showCustomAlert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！');
       } else if (roomKey === 'gate3') {
         checkGameClear();
       }
@@ -566,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const clearScreen = document.getElementById('clear-screen');
       switchScreen(activeScreen, clearScreen);
     } else {
-      alert('【正門解除中…】\n正門のロックは外れた！しかし、完全に脱出するにはもう一人のプレイヤーも「正門」のロックを解除する必要があるようだ…！');
+      showCustomAlert('【正門解除中…】\n正門のロックは外れた！しかし、完全に脱出するにはもう一人のプレイヤーも「正門」のロックを解除する必要があるようだ…！');
     }
   }
 
@@ -622,7 +670,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const code = inputEl.value.trim();
     if (code === roomData.code) {
-      alert(roomData.successMsg);
+      bgm.playCorrect(); // ピンポン音
+      showCustomAlert(roomData.successMsg);
       clearedRooms[`${playerKey}-${roomKey}`] = true;
       updateRoomUI(playerKey, roomData, roomKey);
       renderMap();
@@ -633,7 +682,8 @@ document.addEventListener('DOMContentLoaded', () => {
         checkStairsUnlock(playerKey, roomKey);
       }
     } else {
-      alert('【エラー】\nコードが違います。不気味な音が響き渡った。');
+      bgm.playWrong(); // ブブー音
+      showCustomAlert('【エラー】\nコードが違います。不気味な音が響き渡った。');
       inputEl.value = '';
       inputEl.style.borderColor = 'var(--color-neon-red)';
       setTimeout(() => {
@@ -656,4 +706,538 @@ document.addEventListener('DOMContentLoaded', () => {
   inputCodeB.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') btnSubmitB.click();
   });
+
+  // --- Web Audio APIを使用した「夜の学校風」BGM自動生成・作曲クラス ---
+  class NightSchoolBGM {
+    constructor() {
+      this.ctx = null;
+      this.masterGain = null;
+      this.isPlaying = false;
+      this.isMuted = false;
+      this.isTension = false; // 最終ステージの緊迫モードフラグ
+      
+      this.bpm = 75; // 通常BPM
+      this.stepTime = 60 / this.bpm / 4;
+      this.currentStep = 0;
+      this.nextNoteTime = 0.0;
+      this.timerId = null;
+      this.oscillators = [];
+      this.defaultVolume = 0.3; // 音量0.3
+      
+      // 通常時 (C - G - Am - F)
+      this.normalChords = [
+        { root: 65.41,  notes: [130.81, 164.81, 196.00, 261.63] }, // C (C2, C3, E3, G3, C4)
+        { root: 98.00,  notes: [146.83, 196.00, 246.94, 293.66] }, // G (G2, D3, G3, B3, D4)
+        { root: 55.00,  notes: [110.00, 130.81, 164.81, 220.00] }, // Am (A1, A2, C3, E3, A3)
+        { root: 87.31,  notes: [130.81, 174.61, 220.00, 261.63] }  // F (F2, C3, F3, A3, C4)
+      ];
+
+      // 緊迫時マイナーコード (Am - F - Dm - E7)
+      this.tensionChords = [
+        { root: 55.00,  notes: [110.00, 130.81, 164.81, 220.00] }, // Am
+        { root: 87.31,  notes: [130.81, 174.61, 220.00, 261.63] }, // F
+        { root: 73.42,  notes: [110.00, 146.83, 174.61, 220.00] }, // Dm
+        { root: 82.41,  notes: [116.54, 164.81, 207.65, 246.94] }  // E7 (G#を含む不穏な響き)
+      ];
+
+      this.chords = this.normalChords;
+    }
+
+    init() {
+      if (this.ctx) return;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      
+      this.ctx = new AudioContextClass();
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.setValueAtTime(this.defaultVolume, this.ctx.currentTime);
+      
+      // テンポ同期ディレイ
+      const delay = this.ctx.createDelay(2.0);
+      delay.delayTime.value = (60 / this.bpm) * 0.75;
+      
+      const feedback = this.ctx.createGain();
+      feedback.gain.value = 0.38;
+      
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 450;
+      
+      delay.connect(filter);
+      filter.connect(feedback);
+      feedback.connect(delay);
+      
+      this.masterGain.connect(this.ctx.destination);
+      delay.connect(this.masterGain);
+      this.delayNode = delay;
+    }
+
+    start() {
+      this.init();
+      if (!this.ctx || this.isPlaying) return;
+      
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+      this.isPlaying = true;
+      this.currentStep = 0;
+      this.nextNoteTime = this.ctx.currentTime;
+      
+      const scheduler = () => {
+        if (!this.isPlaying) return;
+        
+        // alert()などのダイアログ表示でスレッドが一時停止し、現在時刻が発音予定時刻を大幅に過ぎた場合、
+        // 予定時刻を現在時刻にリセットして同期を回復し、BGMが停止したり破綻するのを防ぐセーフガード処理
+        if (this.nextNoteTime < this.ctx.currentTime) {
+          this.nextNoteTime = this.ctx.currentTime;
+        }
+
+        while (this.nextNoteTime < this.ctx.currentTime + 0.1) {
+          this.scheduleNextStep(this.currentStep, this.nextNoteTime);
+          this.nextStep();
+        }
+        this.timerId = setTimeout(scheduler, 25);
+      };
+      
+      scheduler();
+    }
+
+    nextStep() {
+      this.currentStep = (this.currentStep + 1) % 64;
+      this.nextNoteTime += this.stepTime;
+    }
+
+    // 最終局面の緊迫したBGMモードに切り替え
+    switchToTensionMode() {
+      if (this.isTension) return;
+      this.isTension = true;
+      
+      // 焦りを感じつつも謎解きに集中できるBPM112に微調整
+      this.bpm = 112;
+      this.stepTime = 60 / this.bpm / 4;
+      this.chords = this.tensionChords;
+
+      // ディレイタイムも即座にテンポ同期
+      if (this.ctx && this.delayNode) {
+        const now = this.ctx.currentTime;
+        this.delayNode.delayTime.setValueAtTime(this.delayNode.delayTime.value, now);
+        this.delayNode.delayTime.linearRampToValueAtTime((60 / this.bpm) * 0.75, now + 0.5);
+      }
+    }
+
+    switchToNormalMode() {
+      if (!this.isTension) return;
+      this.isTension = false;
+      this.bpm = 75;
+      this.stepTime = 60 / this.bpm / 4;
+      this.chords = this.normalChords;
+
+      if (this.ctx && this.delayNode) {
+        const now = this.ctx.currentTime;
+        this.delayNode.delayTime.setValueAtTime(this.delayNode.delayTime.value, now);
+        this.delayNode.delayTime.linearRampToValueAtTime((60 / this.bpm) * 0.75, now + 0.5);
+      }
+    }
+
+    scheduleNextStep(step, time) {
+      if (this.isMuted) return;
+
+      const chordIndex = Math.floor(step / 16);
+      const chord = this.chords[chordIndex];
+      const stepInBar = step % 16;
+
+      if (this.isTension) {
+        // === 最終問題の緊迫BGM演奏モード（BPM 112 / 鋭い音源） ===
+        
+        // 1. 唸るシンセベース音（のこぎり波＋レゾナンスローパスフィルターでアシッドな低音）
+        // 8分音符で「ズンズンズンズン…」と疾走させる
+        if (stepInBar % 2 === 0) {
+          const vol = (stepInBar % 4 === 0) ? 0.08 : 0.06;
+          this.playTensionBass(chord.root, vol, time);
+        }
+
+        // 2. タイトな4つ打ちキック ＆ 金属ハット
+        // 4つ打ちキック
+        if (stepInBar % 4 === 0) {
+          this.playKick(time, 0.11);
+        }
+        // 金属ハイハット
+        if (stepInBar % 2 === 0) {
+          const hatVol = (stepInBar % 4 === 2) ? 0.045 : 0.025;
+          this.playHats(time, hatVol);
+        }
+        if (stepInBar === 15) {
+          this.playHats(time, 0.02);
+          this.playHats(time + this.stepTime / 2, 0.015);
+        }
+
+        // 3. 緊迫メロディ（三角波による少し鋭く冷たいピコピコベル）
+        if (stepInBar === 0) {
+          this.playTensionMelody(chord.notes[0], 0.065, time, 0.22); // 8分
+        } else if (stepInBar === 2) {
+          this.playTensionMelody(chord.notes[1], 0.065, time, 0.22); // 8分
+        } else if (stepInBar === 4) {
+          this.playTensionMelody(chord.notes[2], 0.065, time, 0.45); // 4分
+        } else if (stepInBar === 8) {
+          this.playTensionMelody(chord.notes[3], 0.07, time, 0.45);  // 4分
+        } else if (stepInBar === 12) {
+          // 最後の拍は「8分 + 16分 + 16分」で不穏に駆け上がる
+          this.playTensionMelody(chord.notes[2], 0.06, time, 0.22);
+          this.playTensionMelody(chord.notes[1], 0.05, time + this.stepTime * 2, 0.11);
+          this.playTensionMelody(chord.notes[3], 0.045, time + this.stepTime * 3, 0.11);
+        }
+
+        // アレンジ：偶数小節のステップ10で、不協和な半音ゴースト音をピピッっと入れる
+        if (chordIndex % 2 === 1 && stepInBar === 10) {
+          this.playTensionMelody(chord.notes[3] * 1.06, 0.035, time, 0.15);
+        }
+
+      } else {
+        // === 通常の謎解きBGM演奏モード ===
+        
+        // 1. 通常ベース（8分音符で適度に動くウォーキングベース）
+        if (stepInBar === 0) {
+          this.playSine(chord.root, 0.08, time, 0.04, 0.8);
+        } else if (stepInBar === 6) {
+          this.playSine(chord.notes[1], 0.05, time, 0.04, 0.4);
+        } else if (stepInBar === 8) {
+          this.playSine(chord.root, 0.07, time, 0.04, 0.6);
+        } else if (stepInBar === 14) {
+          const connectFreq = chord.notes[2];
+          this.playSine(connectFreq, 0.06, time, 0.04, 0.3);
+        }
+
+        // 2. 通常ドラム（Lo-Fi風の跳ねるキック ＆ ウッドブロック）
+        if (stepInBar === 0 || stepInBar === 8) {
+          this.playKick(time, 0.09);
+        } else if (stepInBar === 6 || stepInBar === 14) {
+          this.playKick(time, 0.045);
+        }
+
+        if (stepInBar === 4 || stepInBar === 12) {
+          this.playWoodBlock(time, 240, 0.06);
+        } else if (stepInBar === 15) {
+          this.playWoodBlock(time, 280, 0.025);
+          this.playWoodBlock(time + this.stepTime / 2, 260, 0.02);
+        }
+
+        // 3. 通常メロディ (8, 8, 4, 4, 4 リズム ＆ 装飾アレンジ)
+        const isLastBar = (chordIndex === 3);
+
+        if (stepInBar === 0) {
+          this.playMelody(chord.notes[0], 0.05, time, 0.4);
+        } else if (stepInBar === 2) {
+          this.playMelody(chord.notes[1], 0.05, time, 0.4);
+        } else if (stepInBar === 4) {
+          this.playMelody(chord.notes[2], 0.05, time, 0.8);
+        } else if (stepInBar === 8) {
+          this.playMelody(chord.notes[3], 0.05, time, 0.8);
+        } else if (stepInBar === 12) {
+          if (isLastBar) {
+            this.playMelody(chord.notes[1], 0.05, time, 0.4);
+            this.playMelody(chord.notes[2], 0.04, time + this.stepTime * 2, 0.2);
+            this.playMelody(chord.notes[3], 0.035, time + this.stepTime * 3, 0.2);
+          } else {
+            this.playMelody(chord.notes[1], 0.05, time, 0.8);
+          }
+        }
+
+        if (chordIndex === 1 && stepInBar === 10) {
+          this.playMelody(chord.notes[3] * 1.5, 0.02, time, 0.25);
+        }
+        
+        if (chordIndex === 2 && stepInBar === 6) {
+          this.playMelody(chord.notes[2], 0.035, time, 0.3);
+        }
+      }
+    }
+
+    playSine(freq, volume, time, attack, release) {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(volume, time + attack);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + attack + release);
+      
+      osc.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      
+      osc.start(time);
+      osc.stop(time + attack + release + 0.1);
+    }
+
+    // 緊迫ベース：のこぎり波 + 遮断周波数280Hzのレゾナンスローパスフィルター
+    playTensionBass(freq, volume, time) {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      
+      filter.type = 'lowpass';
+      filter.frequency.value = 280;
+      filter.Q.value = 5.0;
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(volume * 1.6, time + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.15);
+      
+      osc.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      
+      osc.start(time);
+      osc.stop(time + 0.17);
+    }
+
+    playMelody(freq, volume, time, duration = 1.2) {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(volume, time + 0.15);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+      
+      osc.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      gainNode.connect(this.delayNode);
+      
+      osc.start(time);
+      osc.stop(time + duration + 0.2);
+    }
+
+    // 緊迫メロディ：三角波 + ローパスフィルターによるデジタルシンセ音色
+    playTensionMelody(freq, volume, time, duration = 0.4) {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      
+      filter.type = 'lowpass';
+      filter.frequency.value = 750;
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(volume, time + 0.015);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+      
+      osc.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      gainNode.connect(this.delayNode);
+      
+      osc.start(time);
+      osc.stop(time + duration + 0.1);
+    }
+
+    playKick(time, volume) {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(100, time);
+      osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.2);
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(volume, time + 0.008);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.2);
+      
+      osc.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      
+      osc.start(time);
+      osc.stop(time + 0.22);
+    }
+
+    // 緊迫ハイハット：鋭い高周波ののこぎり波 + バンドパスフィルター
+    playHats(time, volume = 0.05) {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.value = 9500;
+      
+      filter.type = 'bandpass';
+      filter.frequency.value = 8500;
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(volume, time + 0.002);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.025);
+      
+      osc.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      
+      osc.start(time);
+      osc.stop(time + 0.035);
+    }
+
+    playWoodBlock(time, freq = 240, volume = 0.06) {
+      const osc = this.ctx.createOscillator();
+      const gainNode = this.ctx.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      
+      gainNode.gain.setValueAtTime(0, time);
+      gainNode.gain.linearRampToValueAtTime(volume, time + 0.005);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.12);
+      
+      osc.connect(gainNode);
+      gainNode.connect(this.masterGain);
+      
+      const delayGain = this.ctx.createGain();
+      delayGain.gain.value = 0.15;
+      gainNode.connect(delayGain);
+      delayGain.connect(this.delayNode);
+
+      osc.start(time);
+      osc.stop(time + 0.14);
+    }
+
+    // 正解効果音：ピンポン（高→さらに高い2音のサイン波）
+    playCorrect() {
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const se = this.ctx.createGain();
+      se.gain.setValueAtTime(0.45, now);
+      se.connect(this.ctx.destination);
+
+      // 1音目「ピン」(880Hz)
+      const o1 = this.ctx.createOscillator();
+      const g1 = this.ctx.createGain();
+      o1.type = 'sine';
+      o1.frequency.value = 880;
+      g1.gain.setValueAtTime(0, now);
+      g1.gain.linearRampToValueAtTime(0.5, now + 0.01);
+      g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+      o1.connect(g1); g1.connect(se);
+      o1.start(now); o1.stop(now + 0.2);
+
+      // 2音目「ポン」(1320Hz)：少し遅らせる
+      const o2 = this.ctx.createOscillator();
+      const g2 = this.ctx.createGain();
+      o2.type = 'sine';
+      o2.frequency.value = 1320;
+      g2.gain.setValueAtTime(0, now + 0.14);
+      g2.gain.linearRampToValueAtTime(0.5, now + 0.16);
+      g2.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+      o2.connect(g2); g2.connect(se);
+      o2.start(now + 0.14); o2.stop(now + 0.45);
+    }
+
+    // 不正解効果音：ブブー（低い矩形波を二回短く鳴らす）
+    playWrong() {
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const se = this.ctx.createGain();
+      se.gain.setValueAtTime(0.35, now);
+      se.connect(this.ctx.destination);
+
+      [0, 0.22].forEach(offset => {
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        o.type = 'sawtooth';
+        o.frequency.value = 110; // 低くてブブな周波数
+        filter.type = 'lowpass';
+        filter.frequency.value = 300;
+        g.gain.setValueAtTime(0, now + offset);
+        g.gain.linearRampToValueAtTime(0.6, now + offset + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.18);
+        o.connect(filter); filter.connect(g); g.connect(se);
+        o.start(now + offset); o.stop(now + offset + 0.2);
+      });
+    }
+
+    stop() {
+      this.isPlaying = false;
+      if (this.timerId) {
+        clearTimeout(this.timerId);
+        this.timerId = null;
+      }
+    }
+
+    toggleMute() {
+      this.isMuted = !this.isMuted;
+      if (this.masterGain) {
+        const targetVol = this.isMuted ? 0 : this.defaultVolume;
+        this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.ctx.currentTime);
+        this.masterGain.gain.linearRampToValueAtTime(targetVol, this.ctx.currentTime + 0.3);
+      }
+      return this.isMuted;
+    }
+  }
+
+  const bgm = new NightSchoolBGM();
+
+  // タイトル画面のスタートボタンでBGM開始
+  btnStartGame.addEventListener('click', () => {
+    bgm.start();
+  });
+
+  // 直接ゲーム画面（西棟・東棟）に入った場合でもBGMを開始する
+  // 同時に、すでに玄関前がアンロックされている進行度なら最初から緊迫BGMに設定する
+  routePlayerA.addEventListener('click', () => {
+    bgm.start();
+    if (unlockedFloorA === 0) {
+      bgm.switchToTensionMode();
+    } else {
+      bgm.switchToNormalMode();
+    }
+  });
+  routePlayerB.addEventListener('click', () => {
+    bgm.start();
+    if (unlockedFloorB === 0) {
+      bgm.switchToTensionMode();
+    } else {
+      bgm.switchToNormalMode();
+    }
+  });
+
+  // ミュート切り替えイベント登録
+  const btnMuteA = document.getElementById('btn-mute-a');
+  const btnMuteB = document.getElementById('btn-mute-b');
+
+  function updateMuteButtons(muted) {
+    const text = muted ? '🔇 BGM OFF' : '🔊 BGM ON';
+    if (btnMuteA) btnMuteA.textContent = text;
+    if (btnMuteB) btnMuteB.textContent = text;
+  }
+
+  if (btnMuteA) {
+    btnMuteA.addEventListener('click', () => {
+      if (!bgm.isPlaying) {
+        bgm.start();
+        if (unlockedFloorA === 0) bgm.switchToTensionMode();
+        updateMuteButtons(false);
+      } else {
+        const muted = bgm.toggleMute();
+        updateMuteButtons(muted);
+      }
+    });
+  }
+
+  if (btnMuteB) {
+    btnMuteB.addEventListener('click', () => {
+      if (!bgm.isPlaying) {
+        bgm.start();
+        if (unlockedFloorB === 0) bgm.switchToTensionMode();
+        updateMuteButtons(false);
+      } else {
+        const muted = bgm.toggleMute();
+        updateMuteButtons(muted);
+      }
+    });
+  }
 });
