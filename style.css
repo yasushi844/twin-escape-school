@@ -472,11 +472,11 @@ body {
   border-radius: 8px;
   width: 100%;
   max-width: 900px;
-  aspect-ratio: 16 / 9;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+  padding: 1rem; /* 四方に固定で1remの余白を設ける */
 }
 
 /* Blue borders for Player A panel */
@@ -518,7 +518,7 @@ body {
   flex: 1;
   width: 100%;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border: none;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
@@ -527,7 +527,7 @@ body {
   color: var(--color-text-muted);
   gap: 1rem;
   text-align: center;
-  padding: 2rem;
+  padding: 0;
 }
 
 .puzzle-visual .icon-placeholder,
@@ -549,7 +549,22 @@ body {
   font-family: monospace;
   font-size: 1.5rem;
   line-height: 1.6;
-  margin-top: 0.5rem;
+  margin-top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.puzzle-clue img {
+  max-width: 100%;
+  max-height: 480px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .clue-answer {
@@ -688,7 +703,7 @@ body {
 /* --- 4. MAP INTERFACE --- */
 .map-container {
   position: absolute;
-  bottom: 8rem;
+  bottom: 2rem; /* 回答欄の下端（game-containerの余白）と揃うように配置 */
   width: 380px;
   background: rgba(5, 5, 10, 0.95);
   backdrop-filter: blur(10px);
@@ -743,24 +758,43 @@ body {
   transition: height var(--transition-normal);
 }
 
-.map-grid.has-gate {
+/* 扉正解後: gate1登場（一段階目） */
+.map-grid.has-gate1 {
   grid-template-rows: repeat(4, 1fr);
   height: 200px;
 }
+/* gate2登場（二段階目） */
+.map-grid.has-gate2 {
+  grid-template-rows: repeat(5, 1fr);
+  height: 250px;
+}
+/* gate3登場（三段階目） */
+.map-grid.has-gate3 {
+  grid-template-rows: repeat(6, 1fr);
+  height: 300px;
+}
 
-.map-grid .map-cell[data-room="gate"],
-.map-grid .map-space {
+/* 初期状態は全て非表示 */
+.map-grid .map-cell[data-room="gate1"],
+.map-grid .map-cell[data-room="gate2"],
+.map-grid .map-cell[data-room="gate3"] {
   display: none !important;
 }
 
-.map-grid.has-gate .map-cell[data-room="gate"] {
+/* has-gate1以降はgate1表示 */
+.map-grid.has-gate1 .map-cell[data-room="gate1"],
+.map-grid.has-gate2 .map-cell[data-room="gate1"],
+.map-grid.has-gate3 .map-cell[data-room="gate1"] {
   display: flex !important;
 }
-
-.map-grid.has-gate .map-space {
-  display: block !important;
-  visibility: hidden;
-  pointer-events: none;
+/* has-gate2以降はgate2表示 */
+.map-grid.has-gate2 .map-cell[data-room="gate2"],
+.map-grid.has-gate3 .map-cell[data-room="gate2"] {
+  display: flex !important;
+}
+/* has-gate3はgate3表示 */
+.map-grid.has-gate3 .map-cell[data-room="gate3"] {
+  display: flex !important;
 }
 
 .map-cell {
@@ -815,7 +849,6 @@ body {
   color: #fff;
   font-weight: bold;
   animation: pulse-active-west 1.5s infinite alternate;
-  text-shadow: 0 0 5px #fff;
 }
 
 /* 東校舎（緑）の図面設定 */
@@ -840,7 +873,19 @@ body {
   color: #fff;
   font-weight: bold;
   animation: pulse-active-east 1.5s infinite alternate;
-  text-shadow: 0 0 5px #fff;
+}
+
+/* 正解済みの部屋：テーマ色を薄くした背景で塗る */
+.map-west .map-cell.cleared-cell {
+  background-color: rgba(0, 242, 254, 0.12);
+  border-color: rgba(0, 242, 254, 0.5);
+  color: rgba(0, 242, 254, 0.9);
+}
+
+.map-east .map-cell.cleared-cell {
+  background-color: rgba(57, 255, 20, 0.12);
+  border-color: rgba(57, 255, 20, 0.5);
+  color: rgba(57, 255, 20, 0.9);
 }
 
 /* 階段マスの「かたどられた」デザイン (西校舎 - 右上ジグザグ4段: 反転) */
@@ -857,7 +902,8 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
   /* viewBox=0 0 150 100 でx座標を1.5倍にスケールアップ → 横に1.5倍引き伸ばし */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%23000000' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2300f2fe33）にする */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%23000000' stroke='%2300f2fe33' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
   transition: var(--transition-fast);
 }
 
@@ -884,7 +930,8 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
   /* viewBox=0 0 150 100 でx座標を1.5倍にスケールアップ → 横に1.5倍引き伸ばし */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%23000000' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2339ff1433）にする */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%23000000' stroke='%2339ff1433' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
   transition: var(--transition-fast);
 }
 
@@ -981,7 +1028,8 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
   /* 扉の横幅を少しだけ狭めてバランスを取り（幅100）、ドアノブなしの上品なアーチドアを描画 */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%2300f2fe' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2300f2fe33）にする */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%2300f2fe33' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
 }
 
 .map-east .map-cell[data-room="janitor"] {
@@ -992,7 +1040,8 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
   /* 扉の横幅を少しだけ狭めてバランスを取り（幅100）、ドアノブなしの上品なアーチドアを描画 */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%2339ff14' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+  /* デフォルトは他の教室同様に枠線を薄め（透明度20%: %2339ff1433）にする */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%23000000' stroke='%2339ff1433' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
 }
 
 /* ホバー時 */
@@ -1029,4 +1078,64 @@ body {
 /* 玄関セル専用：横幅いっぱい（スパン4）の長い長方形デザイン */
 .map-cell[data-room="gate"] {
   grid-column: span 4 !important;
+}
+
+/* 正解済みの階段マス：SVGのfillをテーマ色の薄い色で塗る */
+.map-west .map-cell[data-room^="stairs-"].cleared-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 147.75 79.1 L 118.65 79.1 L 118.65 59.7 L 89.55 59.7 L 89.55 40.3 L 60.45 40.3 L 60.45 20.9 L 31.35 20.9 L 31.35 1.5 L 2.25 1.5 L 2.25 98.5 L 147.75 98.5 Z' fill='%2300f2fe40' stroke='%2300f2fe80' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+.map-west .map-cell[data-room^="stairs-"].cleared-cell span {
+  color: rgba(0, 242, 254, 0.9);
+}
+
+.map-east .map-cell[data-room^="stairs-"].cleared-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 2.25 79.1 L 31.35 79.1 L 31.35 59.7 L 60.45 59.7 L 60.45 40.3 L 89.55 40.3 L 89.55 20.9 L 118.65 20.9 L 118.65 1.5 L 147.75 1.5 L 147.75 98.5 L 2.25 98.5 Z' fill='%2339ff1440' stroke='%2339ff1480' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+.map-east .map-cell[data-room^="stairs-"].cleared-cell span {
+  color: rgba(57, 255, 20, 0.9);
+}
+
+/* 正解済みの扉マス：SVGのfillをテーマ色の薄い色で塗る */
+.map-west .map-cell[data-room="entrance"].cleared-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%2300f2fe40' stroke='%2300f2fe80' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+
+.map-east .map-cell[data-room="janitor"].cleared-cell {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 100'><path d='M 25 90 L 25 60 A 50 50 0 0 1 125 60 L 125 90 Z' fill='%2339ff1440' stroke='%2339ff1480' stroke-width='3' vector-effect='non-scaling-stroke' stroke-linejoin='miter'/></svg>") !important;
+}
+/* 玄関前・玄関・正門セル：横幅いっぱい（4列スパン）の長い長方形デザイン */
+.map-cell[data-room="gate1"],
+.map-cell[data-room="gate2"],
+.map-cell[data-room="gate3"] {
+  grid-column: span 4 !important;
+}
+
+/* 玄関前、玄関、正門の通常時・選択時・正解済みのテーマ色（東西共通で紫） */
+.map-west .map-cell[data-room^="gate"],
+.map-east .map-cell[data-room^="gate"] {
+  border-color: rgba(176, 38, 255, 0.2) !important; /* 通常の枠線 */
+}
+
+/* ホバー時 */
+.map-west .map-cell[data-room^="gate"]:hover,
+.map-east .map-cell[data-room^="gate"]:hover {
+  border-color: var(--color-neon-purple) !important;
+  box-shadow: 0 0 8px rgba(176, 38, 255, 0.4) !important;
+}
+
+/* 選択時（アクティブ） */
+.map-west .map-cell[data-room^="gate"].active-room,
+.map-east .map-cell[data-room^="gate"].active-room {
+  background-color: rgba(176, 38, 255, 0.15) !important;
+  border-color: var(--color-neon-purple) !important;
+  color: #fff !important;
+  font-weight: bold !important;
+}
+
+/* 正解済み（クリア状態） */
+.map-west .map-cell[data-room^="gate"].cleared-cell,
+.map-east .map-cell[data-room^="gate"].cleared-cell {
+  background-color: rgba(176, 38, 255, 0.12) !important;
+  border-color: rgba(176, 38, 255, 0.5) !important;
+  color: rgba(176, 38, 255, 0.9) !important;
 }
