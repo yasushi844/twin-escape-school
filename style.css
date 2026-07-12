@@ -923,7 +923,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start; /* centerからflex-startに変更してpadding-topを有効にする */
-  padding-top: 26px; /* 階段文字をさらに5px下に移動 */
+  padding-top: 24px; /* 他の教室と完全に同じパディング値に統一して高さを揃える */
   background-color: transparent !important;
   background-size: 100% 100% !important;
   background-position: center !important;
@@ -951,7 +951,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start; /* centerからflex-startに変更してpadding-topを有効にする */
-  padding-top: 26px; /* 階段文字をさらに5px下に移動 */
+  padding-top: 24px; /* 他の教室と完全に同じパディング値に統一して高さを揃える */
   background-color: transparent !important;
   background-size: 100% 100% !important;
   background-position: center !important;
@@ -1194,12 +1194,46 @@ body {
   color: rgba(255, 49, 49, 0.9) !important;
 }
 
+/* HUDコントロールグループ（通常時は縦並び） */
+.hud-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+/* HINTボタン（サイバーゴールドイエロー） */
+.btn-hint {
+  background: rgba(255, 170, 0, 0.05);
+  border: 1px solid rgba(255, 170, 0, 0.25);
+  color: #ffaa00;
+  padding: 0.4rem 0; /* 左右パディングを0にして固定幅で揃える */
+  width: 120px;      /* HINTボタンとBGMボタンの横幅を統一 */
+  text-align: center;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-body);
+  text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
+  box-shadow: 0 0 8px rgba(255, 170, 0, 0.05);
+}
+
+.btn-hint:hover {
+  background: rgba(255, 170, 0, 0.15);
+  border-color: #ffaa00;
+  box-shadow: 0 0 12px rgba(255, 170, 0, 0.3);
+}
+
 /* BGMミュートボタン */
 .btn-mute {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--color-text-muted);
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0; /* 左右パディングを0にして固定幅で揃える */
+  width: 120px;      /* HINTボタンとBGMボタンの横幅を統一 */
+  text-align: center;
   font-size: 0.8rem;
   border-radius: 4px;
   cursor: pointer;
@@ -1325,8 +1359,8 @@ body {
   }
 
   header {
-    /* スマホ画面の最上部にも空間を設ける */
-    padding: 1.8rem 0.5rem 0.8rem 0.5rem !important;
+    /* スマホ画面の最上部に空間を設け、左右の余白を1.2remに広げて端の張り付きを解消 */
+    padding: 2.2rem 1.2rem 1rem 1.2rem !important;
     flex-direction: column !important;
     gap: 1.5rem !important; /* BGMボタンと教室名の間を広く（1.5rem）する */
     align-items: center !important;
@@ -1337,18 +1371,27 @@ body {
     text-align: center !important;
   }
 
-  .btn-mute {
-    padding: 0.3rem 0.6rem !important;
+  .hud-controls {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.8rem !important;
+  }
+
+  .btn-mute,
+  .btn-hint {
+    padding: 0.3rem 0 !important; /* 左右パディングをリセット */
     font-size: 0.75rem !important;
+    width: 105px !important;       /* スマホ時の固定幅を統一 */
+    text-align: center !important;
   }
 
   .game-container {
-    /* スマホ幅に合わせて左右のパディングを最適に伸縮させる。上部(padding-top)を前回の半分の1.4remに縮小 */
-    padding: 1.4rem clamp(0.5rem, 4vw, 1.5rem) 4rem clamp(0.5rem, 4vw, 1.5rem) !important;
+    /* 左右のパディングを端からしっかりと離す（1rem〜1.8remの流動） */
+    padding: 1.5rem clamp(1rem, 5vw, 1.8rem) 4rem clamp(1rem, 5vw, 1.8rem) !important;
   }
 
   .puzzle-panel {
-    padding: 0.5rem !important;
+    padding: 1.2rem !important; /* パネル内部のガラス余白を少し広げて上品にする */
   }
 
   .panel-header {
@@ -1387,6 +1430,10 @@ body {
     padding-right: 0.2rem !important;
     padding-bottom: 0.2rem !important;
     align-items: flex-start !important;
+  }
+
+  .map-cell[data-room^="stairs-"] {
+    padding-top: 19px !important; /* 階段文字の表示高さを他の教室と完全に揃える */
   }
 
   .map-cell[data-room^="gate"] {
@@ -1486,6 +1533,10 @@ body {
     padding-right: 0.1rem !important;
     padding-bottom: 0.1rem !important;
     align-items: flex-start !important;
+  }
+
+  .map-cell[data-room^="stairs-"] {
+    padding-top: 16px !important; /* 階段文字の表示高さを他の教室と完全に揃える */
   }
 
   .map-cell[data-room^="gate"] {

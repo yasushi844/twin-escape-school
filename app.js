@@ -1256,4 +1256,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // HINTボタンイベント登録
+  const btnHintA = document.getElementById('btn-hint-a');
+  const btnHintB = document.getElementById('btn-hint-b');
+
+  function showHintAlert(player, currentRoomKey, roomsMap) {
+    const roomData = roomsMap[currentRoomKey] || roomsMap['default'];
+    const hintMessage = roomData.hint || 'この部屋の謎を解くための手がかりは、相方の画面に隠されているかもしれない。お互いの画面に何が見えるか声に出して共有してみよう！';
+    showCustomAlert(`💡【ヒント】\n${hintMessage}`);
+  }
+
+  if (btnHintA) {
+    btnHintA.addEventListener('click', () => {
+      showHintAlert('a', currentRoomA, roomsWest);
+    });
+  }
+
+  if (btnHintB) {
+    btnHintB.addEventListener('click', () => {
+      showHintAlert('b', currentRoomB, roomsEast);
+    });
+  }
 });
