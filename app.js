@@ -527,7 +527,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById(`input-code-${player}`);
     const submitBtn = document.getElementById(`btn-submit-${player}`);
 
-    roleText.textContent = data.title;
+    const titleParts = data.title.split(' ／ ');
+    const locationName = titleParts[0];
+    const puzzleTitleName = titleParts[1] || '';
+
+    roleText.textContent = locationName;
+
+    const puzzleTitleEl = document.getElementById(`puzzle-title-${player}`);
+    if (puzzleTitleEl) {
+      puzzleTitleEl.textContent = puzzleTitleName;
+      // 謎タイトルが存在しない場合は要素を非表示にして余計な空間を作らないようにする
+      if (puzzleTitleName) {
+        puzzleTitleEl.style.display = 'block';
+      } else {
+        puzzleTitleEl.style.display = 'none';
+      }
+    }
+
     visual.querySelector('.icon-placeholder').textContent = data.icon;
     visual.querySelector('.clue-label').textContent = data.clueLabel;
     
