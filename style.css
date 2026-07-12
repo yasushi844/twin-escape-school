@@ -1150,6 +1150,33 @@ body {
   color: rgba(176, 38, 255, 0.9) !important;
 }
 
+/* 正門 (gate3) の通常時・選択時・正解済みのテーマ色（赤） */
+.map-west .map-cell[data-room="gate3"],
+.map-east .map-cell[data-room="gate3"] {
+  border-color: rgba(255, 49, 49, 0.2) !important;
+}
+
+.map-west .map-cell[data-room="gate3"]:hover,
+.map-east .map-cell[data-room="gate3"]:hover {
+  border-color: var(--color-neon-red) !important;
+  box-shadow: 0 0 8px rgba(255, 49, 49, 0.4) !important;
+}
+
+.map-west .map-cell[data-room="gate3"].active-room,
+.map-east .map-cell[data-room="gate3"].active-room {
+  background-color: rgba(255, 49, 49, 0.15) !important;
+  border-color: var(--color-neon-red) !important;
+  color: #fff !important;
+  font-weight: bold !important;
+}
+
+.map-west .map-cell[data-room="gate3"].cleared-cell,
+.map-east .map-cell[data-room="gate3"].cleared-cell {
+  background-color: rgba(255, 49, 49, 0.12) !important;
+  border-color: rgba(255, 49, 49, 0.5) !important;
+  color: rgba(255, 49, 49, 0.9) !important;
+}
+
 /* BGMミュートボタン */
 .btn-mute {
   background: rgba(255, 255, 255, 0.05);
@@ -1234,4 +1261,139 @@ body {
   white-space: pre-wrap;
   color: #fff;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* ==========================================================================
+   5. RESPONSIVE DESIGN (スマホ・タブレット対応)
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .game-container-layout {
+    grid-template-columns: 1fr !important; /* 1カラムに並び替える */
+    align-items: center !important;
+    gap: 1.5rem !important;
+    padding-top: 1vh !important;
+  }
+
+  .map-placeholder {
+    display: none !important; /* プレースホルダーを隠す */
+  }
+
+  .map-container {
+    width: 100% !important;
+    max-width: 500px !important;
+    order: 1 !important; /* マップを上に配置 */
+  }
+
+  .puzzle-main-content {
+    width: 100% !important;
+    order: 2 !important; /* 謎解きエリアを下に配置 */
+  }
+
+  /* 画面が崩れないようにFlex縦並びに固定 */
+  .player-a-screen .game-container-layout,
+  .player-b-screen .game-container-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px !important;
+  }
+
+  header {
+    padding: 0.8rem 0.5rem !important;
+    flex-direction: column !important;
+    gap: 0.8rem !important;
+    align-items: center !important;
+  }
+
+  .hud-title {
+    font-size: 0.95rem !important;
+    text-align: center !important;
+  }
+
+  .btn-mute {
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .game-container {
+    padding: 1rem 0.5rem 3rem 0.5rem !important;
+  }
+
+  .puzzle-panel {
+    padding: 0.5rem !important;
+  }
+
+  .panel-header {
+    padding: 1rem !important;
+  }
+
+  .panel-header h2 {
+    font-size: 1.1rem !important;
+    letter-spacing: 0.05rem !important;
+  }
+
+  .panel-body {
+    padding: 1rem !important;
+    gap: 1rem !important;
+  }
+
+  /* 謎画像のサイズ調整 */
+  .puzzle-clue img {
+    max-height: 250px !important;
+  }
+
+  .icon-placeholder {
+    font-size: 3.5rem !important;
+  }
+
+  /* マップのセルサイズ調整 */
+  .map-grid {
+    gap: 0.4rem !important;
+  }
+
+  .map-cell {
+    height: 44px !important;
+    font-size: 0.75rem !important;
+    padding: 0.2rem !important;
+  }
+
+  .map-cell[data-room^="gate"] {
+    height: 36px !important;
+  }
+
+  /* タイトル・セレクト画面のレスポンシブ */
+  .title-container h1 {
+    font-size: 2.2rem !important;
+    letter-spacing: 0.2rem !important;
+  }
+
+  .select-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+  }
+
+  .select-box {
+    width: 100% !important;
+    max-width: 300px !important;
+    padding: 1.5rem !important;
+  }
+
+  /* カスタムアラートモーダルのサイズ調整 */
+  .custom-modal-content {
+    padding: 1.5rem !important;
+    width: 95% !important;
+  }
+
+  #custom-alert-message {
+    font-size: 0.95rem !important;
+    margin-bottom: 1.5rem !important;
+  }
 }
