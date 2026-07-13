@@ -234,7 +234,8 @@ body {
 
 /* --- 2. SELECTION SCREEN --- */
 #selection-screen {
-  background-image: url('assets/bg_title.png'); /* 同じ背景で暗めにする */
+  background-color: #05050a; /* 裏の画像と重ならないように黒背景にする */
+  background-image: none;
   display: flex;
   flex-direction: column;
 }
@@ -414,7 +415,7 @@ body {
 
 .mini-logo {
   font-family: var(--font-title);
-  font-size: 1.5rem; /* タイトル名は少し大きめを維持 */
+  font-size: 2.1rem; /* タイトル名を少し大きく変更 */
   font-weight: normal;
   letter-spacing: 0.2rem;
   color: #fff;
@@ -632,13 +633,44 @@ body {
   box-shadow: none !important; /* コンテナ全体にかかる影（背景に見える原因）を削除 */
 }
 
-/* テーマ色でタイトルの下に横線を引く */
+.puzzle-room-title {
+  position: relative;
+  padding-bottom: 1.0rem; /* タイトルと横線の間を広げる */
+  margin-bottom: 0.3rem; /* 横線と画像の間の空間を減らす */
+  width: 100%;
+}
+
+/* テーマ色でおしゃれなグラデーションの横線を引く */
 #player-a-screen .puzzle-room-title {
-  border-bottom: 2px solid var(--color-neon-blue);
+  border-bottom: none;
+}
+#player-a-screen .puzzle-room-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%; /* 横線を少し短く調整 */
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-neon-blue) 15%, var(--color-neon-blue) 85%, transparent);
+  box-shadow: 0 0 10px var(--color-neon-blue);
+  border-radius: 50%;
 }
 
 #player-b-screen .puzzle-room-title {
-  border-bottom: 2px solid var(--color-neon-green);
+  border-bottom: none;
+}
+#player-b-screen .puzzle-room-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75%; /* 横線を少し短く調整 */
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-neon-green) 15%, var(--color-neon-green) 85%, transparent);
+  box-shadow: 0 0 10px var(--color-neon-green);
+  border-radius: 50%;
 }
 
 .puzzle-clue {
@@ -674,7 +706,7 @@ body {
 
 .instruction-text {
   margin-top: 1rem;
-  max-width: 600px;
+  max-width: 450px;
   text-align: center;
   color: var(--color-text-muted);
 }
@@ -1370,10 +1402,10 @@ body {
   background: rgba(20, 20, 30, 0.95);
   border: 2px solid var(--color-neon-blue);
   box-shadow: 0 0 30px rgba(0, 242, 254, 0.35);
-  padding: 2.5rem;
+  padding: 2rem;
   border-radius: 16px;
   width: 90%;
-  max-width: 500px;
+  max-width: 420px;
   text-align: center;
   position: relative;
   transform: scale(0.85);
