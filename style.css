@@ -81,7 +81,7 @@ body {
 
 /* Dark Vignette Overlay */
 .overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -93,7 +93,7 @@ body {
 
 /* Fog Effect */
 .fog-container {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -1078,18 +1078,26 @@ body {
   display: none !important;
 }
 
-/* 階段マスのテキスト（前面に表示） */
-.map-west .map-cell[data-room^="stairs-"] span {
+/* 階段・屋上マスのテキスト（前面に表示） */
+.map-west .map-cell[data-room^="stairs-"] span,
+.map-west .map-cell[data-room="rooftop"] span {
   position: relative;
   z-index: 5;
-  color: var(--color-text-muted);
+  color: #00f2fe !important; /* 西校舎テーマ色（シアン） */
+  text-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+}
+.map-west .map-cell[data-room^="stairs-"] span {
   left: -10px; /* 西側は左に10pxずらす */
 }
 
-.map-east .map-cell[data-room^="stairs-"] span {
+.map-east .map-cell[data-room^="stairs-"] span,
+.map-east .map-cell[data-room="rooftop"] span {
   position: relative;
   z-index: 5;
-  color: var(--color-text-muted);
+  color: #39ff14 !important; /* 東校舎テーマ色（ライムグリーン） */
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+}
+.map-east .map-cell[data-room^="stairs-"] span {
   left: 10px; /* 東側は右に10pxずらす */
 }
 
@@ -1469,7 +1477,16 @@ body {
     height: auto !important;
     max-height: none !important;
     padding-top: 2rem !important;
-    padding-bottom: 4rem !important;
+  }
+
+  /* スクロール時の下部余白を強制的に確保するスペーサー */
+  .game-container-layout::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 30px; /* 余白を30pxに調整 */
+    flex-shrink: 0;
+    order: 99 !important; /* 他の要素より確実に一番下に配置する */
   }
 
   .puzzle-main-content {
@@ -1483,9 +1500,9 @@ body {
     position: relative !important;
     left: auto !important;
     right: auto !important;
-    bottom: auto !important;
+    bottom: auto !important; /* これがないとPC版のbottom: 4remが効いてしまい上に重なる */
     order: 2 !important; /* マップを下に配置 */
-    margin: 0 auto 30px auto !important; /* 画面下端からの余白（30px）を確保 */
+    margin: 0 auto 0 auto !important; /* マージンは0にし、下部余白はスペーサーで管理する */
   }
 }
 
@@ -1511,13 +1528,13 @@ body {
     width: 100% !important;
     max-width: 500px !important;
     order: 3 !important; /* マップを一番下(3)に配置 */
-    margin: 0 auto 30px auto !important; /* 画面下端からの余白（30px）を確保 */
+    margin: 0 auto 0 auto !important; /* マージンは0にし、下部余白はスペーサーで管理する */
   }
 
   .puzzle-main-content {
     width: 100% !important;
     order: 1 !important; /* 謎解きエリアを一番上(1)に配置 */
-    margin: 0 auto !important; /* 画面中央に配置 */
+    margin: 0 auto 2rem auto !important; /* 画面中央に配置し、下部にマップとの余白を確保 */
   }
 
   /* 画面が崩れないようにFlex縦並びに固定 */

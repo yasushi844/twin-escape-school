@@ -182,9 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
       clueLabel: '最初の謎：',
       clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
       clueColor: 'var(--color-neon-blue)',
-      instruction: 'ここは西校舎の屋上だ。まずは肩慣らしに簡単な謎を解こう。<br>画面下の入力欄に「START」と入力してね。',
+      instruction: 'ここは西校舎の屋上だ。まずは肩慣らしに簡単な謎を解こう。<br>画面下の入力欄に「0」と入力してね。',
       showControl: true,
-      code: 'START',
+      code: '0',
       successMsg: '【ロック解除！】\n階段へ進む扉が開いた！次の部屋へ進もう！'
     },
     'stairs-rf': {
@@ -340,9 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
       clueLabel: '最初の謎：',
       clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
       clueColor: 'var(--color-neon-purple)',
-      instruction: 'ここは東校舎の屋上だ。相方と協力して脱出を目指そう。<br>画面下の入力欄に「START」と入力してね。',
+      instruction: 'ここは東校舎の屋上だ。相方と協力して脱出を目指そう。<br>画面下の入力欄に「0」と入力してね。',
       showControl: true,
-      code: 'START',
+      code: '0',
       successMsg: '【ロック解除！】\n階段へ進む扉が開いた！次の部屋へ進もう！'
     },
     'stairs-rf': {
@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', () => {
           input.disabled = true;
           input.style.borderColor = data.clueColor;
           submitBtn.disabled = true;
-          submitBtn.textContent = '解除済み';
+          submitBtn.textContent = '正解';
           submitBtn.classList.add('btn-cleared');
           submitBtn.style.background = `${data.clueColor}33`;
         } else {
