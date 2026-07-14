@@ -61,18 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- ゲーム進行状態 ---
-  let unlockedFloorA = 3; // 西校舎の進行状態
-  let unlockedFloorB = 3; // 東校舎の進行状態
-  let currentRoomA = '3-1';
-  let currentRoomB = 'music';
+  let unlockedFloorA = 4; // 西校舎の進行状態（4=RF, 3=3F, ...）
+  let unlockedFloorB = 4; // 東校舎の進行状態
+  let currentRoomA = 'rooftop';
+  let currentRoomB = 'rooftop';
 
   // 各部屋の解除状態を記録
   const clearedRooms = {
+    'a-rooftop': false, 'a-stairs-rf': false,
     'a-3-1': false, 'a-3-2': false, 'a-3-3': false, 'a-stairs-3f': false,
     'a-2-1': false, 'a-2-2': false, 'a-2-3': false, 'a-stairs-2f': false,
     'a-1-1': false, 'a-1-2': false, 'a-1-3': false, 'a-entrance': false,
     'a-gate1': false, 'a-gate2': false, 'a-gate3': false,
 
+    'b-rooftop': false, 'b-stairs-rf': false,
     'b-music': false, 'b-art': false, 'b-prep': false, 'b-stairs-3f': false,
     'b-science': false, 'b-cooking': false, 'b-meeting': false, 'b-stairs-2f': false,
     'b-staff': false, 'b-principal': false, 'b-infirmary': false, 'b-janitor': false,
@@ -94,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 部屋の名前の定義（日本語表示用） ---
   const roomNamesWest = {
+    'rooftop': '屋上', 'stairs-rf': '階段',
     '3-1': '3-1', '3-2': '3-2', '3-3': '3-3', 'stairs-3f': '階段',
     '2-1': '2-1', '2-2': '2-2', '2-3': '2-3', 'stairs-2f': '階段',
     '1-1': '1-1', '1-2': '1-2', '1-3': '1-3', 'entrance': '扉',
@@ -101,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const roomNamesEast = {
+    'rooftop': '屋上', 'stairs-rf': '階段',
     'music': '音楽室', 'art': '美術室', 'prep': '準備室', 'stairs-3f': '階段',
     'science': '理科室', 'cooking': '家庭科', 'meeting': '会議室', 'stairs-2f': '階段',
     'staff': '職員室', 'principal': '校長室', 'infirmary': '保健室', 'janitor': '扉',
@@ -109,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 自動移動用の次の部屋定義 ---
   const nextRoomsA = {
+    'rooftop': 'stairs-rf', 'stairs-rf': '3-1',
     '3-1': '3-2', '3-2': '3-3', '3-3': 'stairs-3f', 'stairs-3f': '2-1',
     '2-1': '2-2', '2-2': '2-3', '2-3': 'stairs-2f', 'stairs-2f': '1-1',
     '1-1': '1-2', '1-2': '1-3', '1-3': 'entrance', 'entrance': 'gate1',
@@ -116,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const nextRoomsB = {
+    'rooftop': 'stairs-rf', 'stairs-rf': 'music',
     'music': 'art', 'art': 'prep', 'prep': 'stairs-3f', 'stairs-3f': 'science',
     'science': 'cooking', 'cooking': 'meeting', 'meeting': 'stairs-2f', 'stairs-2f': 'staff',
     'staff': 'principal', 'principal': 'infirmary', 'infirmary': 'janitor', 'janitor': 'gate1',
@@ -170,6 +176,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 部屋データ定義 ---
   const roomsWest = {
+    'rooftop': {
+      title: '西校舎 屋上 ／ チュートリアル',
+      icon: '🏫',
+      clueLabel: '最初の謎：',
+      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
+      clueColor: 'var(--color-neon-blue)',
+      instruction: 'ここは西校舎の屋上だ。まずは肩慣らしに簡単な謎を解こう。<br>画面下の入力欄に「START」と入力してね。',
+      showControl: true,
+      code: 'START',
+      successMsg: '【ロック解除！】\n階段へ進む扉が開いた！次の部屋へ進もう！'
+    },
+    'stairs-rf': {
+      title: '西校舎 屋上階段 ／ 3階への扉',
+      icon: '🪜',
+      clueLabel: '階段のロック：',
+      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
+      clueColor: 'var(--color-neon-blue)',
+      instruction: '3階へ降りる扉にロックがかかっている。<br>ここには「0」と入力してみてね。',
+      showControl: true,
+      code: '0',
+      successMsg: '【屋上ゲートロック解除！】\n階段のゲートが開いた！3階へ降りられるようになったよ。'
+    },
     '3-1': {
       title: '西校舎 3年1組 ／ 誰もいない教室',
       icon: '📝',
@@ -306,6 +334,28 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const roomsEast = {
+    'rooftop': {
+      title: '東校舎 屋上 ／ チュートリアル',
+      icon: '🏫',
+      clueLabel: '最初の謎：',
+      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
+      clueColor: 'var(--color-neon-purple)',
+      instruction: 'ここは東校舎の屋上だ。相方と協力して脱出を目指そう。<br>画面下の入力欄に「START」と入力してね。',
+      showControl: true,
+      code: 'START',
+      successMsg: '【ロック解除！】\n階段へ進む扉が開いた！次の部屋へ進もう！'
+    },
+    'stairs-rf': {
+      title: '東校舎 屋上階段 ／ 3階への扉',
+      icon: '🪜',
+      clueLabel: '階段のロック：',
+      clueHtml: '<img src="assets/template_clue.png" alt="謎問題">',
+      clueColor: 'var(--color-neon-purple)',
+      instruction: '3階へ降りる扉にロックがかかっている。<br>ここには「0」と入力してみてね。',
+      showControl: true,
+      code: '0',
+      successMsg: '【屋上ゲートロック解除！】\n階段のゲートが開いた！3階へ降りられるようになったよ。'
+    },
     'music': {
       title: '東校舎 音楽室 ／ 月光 of ピアノ',
       icon: '🎹',
@@ -443,6 +493,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 部屋が属する階層（Floor）を取得
   function getRoomFloor(roomKey) {
+    if (['rooftop', 'stairs-rf'].includes(roomKey)) return 4;
     if (['3-1', '3-2', '3-3', 'stairs-3f', 'music', 'art', 'prep'].includes(roomKey)) return 3;
     if (['2-1', '2-2', '2-3', 'stairs-2f', 'science', 'cooking', 'meeting'].includes(roomKey)) return 2;
     if (['1-1', '1-2', '1-3', 'entrance', 'janitor', 'infirmary', 'principal', 'staff'].includes(roomKey)) return 1;
@@ -468,6 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (floor >= unlockedFloor) {
         cell.classList.remove('locked-cell');
+        cell.classList.remove('hidden-floor');
         cell.disabled = false;
         const name = roomNames[roomKey] || roomKey;
         cell.innerHTML = `<span>${name}</span>`;
@@ -484,6 +536,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.disabled = true;
         cell.innerHTML = `<span>${defaultLockMsg}</span>`;
         // active-roomの削除は上で行っているため不要
+
+        // ゲート（floor=0）以外の未解放フロア（1F, 2F, 3F）は階段を突破するまで完全に非表示にする
+        if (floor > 0) {
+          cell.classList.add('hidden-floor');
+        } else {
+          cell.classList.remove('hidden-floor');
+        }
       }
     });
   }
@@ -531,14 +590,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 背景画像の動的切り替え
       const screenEl = document.getElementById(`player-${player}-screen`);
+      let nextBg = '';
       if (['gate1', 'gate2', 'gate3'].includes(roomKey)) {
-        screenEl.style.backgroundImage = "url('assets/bg_entrance.png')";
+        nextBg = "url('assets/bg_main_gate.png')";
       } else if (roomKey.startsWith('stairs-')) {
-        screenEl.style.backgroundImage = "url('assets/bg_stairs.png')";
+        nextBg = "url('assets/bg_stairs.png')";
       } else if (roomKey === 'entrance' || roomKey === 'janitor') {
-        screenEl.style.backgroundImage = "url('assets/bg_firedoor.png')";
+        nextBg = "url('assets/bg_firedoor.png')";
       } else {
-        screenEl.style.backgroundImage = player === 'a' ? "url('assets/bg_classroom.png')" : "url('assets/bg_science.png')";
+        nextBg = player === 'a' ? "url('assets/bg_classroom.png')" : "url('assets/bg_science.png')";
+      }
+
+      // 現在の背景と異なる場合、モーションアニメーションを行う
+      // 押した瞬間に画像を切り替え、CSSアニメーションで演出する
+      if (screenEl.style.backgroundImage !== '' && screenEl.style.backgroundImage !== nextBg.replace(/'/g, '"')) {
+        screenEl.style.backgroundImage = nextBg;
+        
+        // アニメーションを最初から再生させるために一度クラスを外し、リフローを強制してから再付与
+        screenEl.classList.remove('bg-instant-transition');
+        void screenEl.offsetWidth; 
+        screenEl.classList.add('bg-instant-transition');
+      } else {
+        screenEl.style.backgroundImage = nextBg;
       }
 
       const puzzleTitleEl = document.getElementById(`puzzle-title-${player}`);
@@ -595,27 +668,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 階段・扉・玄関のロック解除判定 ---
   function checkStairsUnlock(player, roomKey, callback = null) {
-    const schoolName = player === 'a' ? '西校舎' : '東校舎';
-
-    if (roomKey === 'stairs-3f') {
+    if (roomKey === 'stairs-rf') {
+      if (player === 'a') unlockedFloorA = 3; else unlockedFloorB = 3;
+    } else if (roomKey === 'stairs-3f') {
       if (player === 'a') unlockedFloorA = 2; else unlockedFloorB = 2;
-      showCustomAlert(`【階層アンロック！】\nゴゴゴ…と不気味な重低音が響き、${schoolName}の2階への重い防火扉が開いた！\nマップから2階の部屋が探索できるようになったよ。`, callback);
     } else if (roomKey === 'stairs-2f') {
       if (player === 'a') unlockedFloorA = 1; else unlockedFloorB = 1;
-      showCustomAlert(`【階層アンロック！】\nガチャリ…と大きな機械ロックが外れ、${schoolName}の1階へのゲートが開いた！\nマップから1階の部屋が探索できるようになったよ。扉へ向かおう！`, callback);
     } else if (roomKey === 'entrance' || roomKey === 'janitor') {
       if (player === 'a') unlockedFloorA = 0; else unlockedFloorB = 0;
-      showCustomAlert('【玄関前への道が開いた！】\nガコン！と大きなロック音が響き、1階の重い扉のロックが解除された！\nマップに「玄関前」が出現したよ。向かおう！', callback);
       bgm.switchToTensionMode(); // 最終局面突入
-    } else if (roomKey === 'gate1') {
-      showCustomAlert('【玄関が解放された！】\n玄関前のロックが外れ、「玄関」が出現したよ！さらに奥へ進もう！', callback);
-    } else if (roomKey === 'gate2') {
-      showCustomAlert('【正門が解放された！】\n玄関チェーンが外れ、最後の「正門」が出現したよ！脱出まであと一歩！', callback);
     } else if (roomKey === 'gate3') {
       checkGameClear(callback);
-    } else if (callback) {
-      callback(); // 念のため
+      return; // checkGameClear内で遷移処理をするためここで終了
     }
+    
+    if (callback) callback();
     renderMap();
   }
 
@@ -654,7 +721,86 @@ document.addEventListener('DOMContentLoaded', () => {
   registerMapCells('#map-west', 'a', roomsWest, (key) => { currentRoomA = key; }, () => unlockedFloorA);
   registerMapCells('#map-east', 'b', roomsEast, (key) => { currentRoomB = key; }, () => unlockedFloorB);
 
+  // --- リッチな解錠（UNLOCK）エフェクト表示 ---
+  function showUnlockEffect(themeClass, callback) {
+    const overlay = document.createElement('div');
+    overlay.className = `unlock-effect-overlay ${themeClass}`;
+    
+    // 錠前アイコン
+    const iconContainer = document.createElement('div');
+    iconContainer.className = 'unlock-icon-container';
+    
+    const iconShackle = document.createElement('div');
+    iconShackle.className = 'unlock-icon-shackle';
+    
+    const iconBody = document.createElement('div');
+    iconBody.className = 'unlock-icon-body';
+    
+    iconContainer.appendChild(iconShackle);
+    iconContainer.appendChild(iconBody);
+    
+    // UNLOCKテキスト
+    const text = document.createElement('div');
+    text.className = 'unlock-text';
+    text.textContent = 'UNLOCK';
+    
+    overlay.appendChild(iconContainer);
+    overlay.appendChild(text);
+    document.body.appendChild(overlay);
+    
+    // SE: ガチャリという重い金属音を追加で鳴らす（低いサイン波で代用）
+    if (bgm && bgm.ctx) {
+      bgm.playStaccato(150, 0.1, bgm.ctx.currentTime);
+      bgm.playStaccato(120, 0.1, bgm.ctx.currentTime + 0.1);
+      
+      // 鍵が開くタイミング（0.5秒後）にもう一度音を鳴らす
+      setTimeout(() => {
+        bgm.playStaccato(220, 0.15, bgm.ctx.currentTime);
+      }, 500);
+    }
+    
+    // 1.5秒間エフェクトを表示した後にフェードアウト
+    setTimeout(() => {
+      overlay.classList.add('fade-out');
+      // フェードアウト完了後にDOM削除と次への遷移
+      setTimeout(() => {
+        overlay.remove();
+        if (callback) callback();
+      }, 250);
+    }, 1500); // 揺れる0.5秒 ＋ 文字が出てから1秒 ＝ 計1.5秒
+  }
 
+
+  // --- リッチな正解エフェクト表示 ---
+  function showCorrectEffect(themeClass, callback) {
+    const overlay = document.createElement('div');
+    overlay.className = `correct-effect-overlay ${themeClass}`;
+    
+    const content = document.createElement('div');
+    content.className = 'correct-effect-content';
+    
+    const text = document.createElement('div');
+    text.className = 'correct-effect-text';
+    text.textContent = 'CORRECT';
+    
+    const ring = document.createElement('div');
+    ring.className = 'correct-effect-ring';
+    
+    content.appendChild(ring);
+    content.appendChild(text);
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+    
+    // 0.75秒間エフェクトを表示した後にフェードアウト
+    setTimeout(() => {
+      overlay.classList.add('fade-out');
+      // フェードアウト完了後にDOM削除と次への遷移
+      setTimeout(() => {
+        overlay.remove();
+        if (callback) callback();
+      }, 250);
+    }, 750);
+  }
 
   // --- 共通送信処理 ---
   function handleCodeSubmit(playerKey, getCurrentRoomKey, roomsMap, inputEl) {
@@ -686,12 +832,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       };
       
-      // 階段・扉・玄関前・玄関・正門の判定
+      // 階段・扉・玄関前・玄関・正門の特殊イベント判定
       if (roomKey.startsWith('stairs-') || roomKey === 'entrance' || roomKey === 'janitor'
           || roomKey === 'gate1' || roomKey === 'gate2' || roomKey === 'gate3') {
-        checkStairsUnlock(playerKey, roomKey, moveToNextRoom);
+        
+        // 特殊イベント時はUNLOCKエフェクトを表示する
+        const themeClass = roomKey.startsWith('gate') ? 'theme-gate' : (playerKey === 'a' ? 'theme-a' : 'theme-b');
+        showUnlockEffect(themeClass, () => {
+          checkStairsUnlock(playerKey, roomKey, moveToNextRoom);
+        });
       } else {
-        showCustomAlert(roomData.successMsg, moveToNextRoom);
+        // 通常の謎解き正解時は解説アラートを廃止し、リッチエフェクトから自動遷移
+        const themeClass = playerKey === 'a' ? 'theme-a' : 'theme-b';
+        showCorrectEffect(themeClass, moveToNextRoom);
       }
     } else {
       bgm.playWrong(); // ブブー音
@@ -727,29 +880,28 @@ document.addEventListener('DOMContentLoaded', () => {
       this.isPlaying = false;
       this.isMuted = false;
       this.isTension = false; // 最終ステージの緊迫モードフラグ
-      
-      this.bpm = 75; // 通常BPM
-      this.stepTime = 60 / this.bpm / 4;
+      this.bpm = 80; // 3連符ワルツ用の少し速めのBPM
+      this.stepTime = 60 / this.bpm / 3; // 1拍を3等分（8分3連符）
       this.currentStep = 0;
       this.nextNoteTime = 0.0;
       this.timerId = null;
       this.oscillators = [];
-      this.defaultVolume = 0.8; // 音量0.8（ユーザー要望により引き上げ）
+      this.defaultVolume = 0.53; // 音量を従来の0.8から約2/3に下げる
       
-      // 通常時 (C - G - Am - F)
+      // 通常時 (C - G - Am - F) 中音域へシフト
       this.normalChords = [
-        { root: 65.41,  notes: [130.81, 164.81, 196.00, 261.63] }, // C (C2, C3, E3, G3, C4)
-        { root: 98.00,  notes: [146.83, 196.00, 246.94, 293.66] }, // G (G2, D3, G3, B3, D4)
-        { root: 55.00,  notes: [110.00, 130.81, 164.81, 220.00] }, // Am (A1, A2, C3, E3, A3)
-        { root: 87.31,  notes: [130.81, 174.61, 220.00, 261.63] }  // F (F2, C3, F3, A3, C4)
+        { root: 261.63, notes: [261.63, 329.63, 392.00, 523.25] }, // C4
+        { root: 196.00, notes: [293.66, 392.00, 493.88, 587.33] }, // G3
+        { root: 220.00, notes: [220.00, 261.63, 329.63, 440.00] }, // A3
+        { root: 174.61, notes: [261.63, 349.23, 440.00, 523.25] }  // F3
       ];
 
-      // 緊迫時マイナーコード (Am - F - Dm - E7)
+      // 緊迫時マイナーコード (Am - F - Dm - E7) 中音域へシフト
       this.tensionChords = [
-        { root: 55.00,  notes: [110.00, 130.81, 164.81, 220.00] }, // Am
-        { root: 87.31,  notes: [130.81, 174.61, 220.00, 261.63] }, // F
-        { root: 73.42,  notes: [110.00, 146.83, 174.61, 220.00] }, // Dm
-        { root: 82.41,  notes: [116.54, 164.81, 207.65, 246.94] }  // E7 (G#を含む不穏な響き)
+        { root: 220.00, notes: [220.00, 261.63, 329.63, 440.00] }, // Am
+        { root: 174.61, notes: [261.63, 349.23, 440.00, 523.25] }, // F
+        { root: 293.66, notes: [293.66, 349.23, 440.00, 587.33] }, // Dm
+        { root: 329.63, notes: [329.63, 415.30, 493.88, 659.25] }  // E7
       ];
 
       this.chords = this.normalChords;
@@ -815,7 +967,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     nextStep() {
-      this.currentStep = (this.currentStep + 1) % 64;
+      this.currentStep = (this.currentStep + 1) % 48; // 1小節12ステップ × 4小節 = 48ステップ
       this.nextNoteTime += this.stepTime;
     }
 
@@ -824,10 +976,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (this.isTension) return;
       this.isTension = true;
       
-      // 焦りを感じつつも謎解きに集中できるBPM112に微調整
-      this.bpm = 112;
-      this.stepTime = 60 / this.bpm / 4;
+      // 焦りを感じつつも謎解きに集中できるテンポに微調整
+      this.bpm = 110; // 緊迫モードの3連符テンポ
+      this.stepTime = 60 / this.bpm / 3;
       this.chords = this.tensionChords;
+
+      if (this.ctx && this.masterGain && !this.isMuted) {
+        const now = this.ctx.currentTime;
+        this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+        this.masterGain.gain.linearRampToValueAtTime(this.defaultVolume * 0.66, now + 1.0); // 音量を2/3に下げる
+      }
 
       // ディレイタイムも即座にテンポ同期
       if (this.ctx && this.delayNode) {
@@ -840,9 +998,15 @@ document.addEventListener('DOMContentLoaded', () => {
     switchToNormalMode() {
       if (!this.isTension) return;
       this.isTension = false;
-      this.bpm = 75;
-      this.stepTime = 60 / this.bpm / 4;
+      this.bpm = 80;
+      this.stepTime = 60 / this.bpm / 3;
       this.chords = this.normalChords;
+
+      if (this.ctx && this.masterGain && !this.isMuted) {
+        const now = this.ctx.currentTime;
+        this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+        this.masterGain.gain.linearRampToValueAtTime(this.defaultVolume, now + 1.0); // 音量を元に戻す
+      }
 
       if (this.ctx && this.delayNode) {
         const now = this.ctx.currentTime;
@@ -854,267 +1018,161 @@ document.addEventListener('DOMContentLoaded', () => {
     scheduleNextStep(step, time) {
       if (this.isMuted) return;
 
-      const chordIndex = Math.floor(step / 16);
-      const chord = this.chords[chordIndex];
-      const stepInBar = step % 16;
+      const chordIndex = Math.floor(step / 12); // 12ステップで1小節
+      const chord = this.chords[chordIndex % this.chords.length];
+      const stepInBar = step % 12;
 
       if (this.isTension) {
-        // === 最終問題の緊迫BGM演奏モード（BPM 112 / 鋭い音源） ===
+        // === 最終問題の緊迫モード（3連符ワルツ） ===
+        // 緊迫時はルート音を毎拍の頭に鳴らし、少し焦らせる
+        if (stepInBar % 3 === 0) {
+          this.playStaccato(chord.root, 0.06, time);
+        }
         
-        // 1. 唸るシンセベース音（のこぎり波＋レゾナンスローパスフィルターでアシッドな低音）
-        // 8分音符で「ズンズンズンズン…」と疾走させる
-        if (stepInBar % 2 === 0) {
-          const vol = (stepInBar % 4 === 0) ? 0.08 : 0.06;
-          this.playTensionBass(chord.root, vol, time);
+        // 拍の裏で不規則にアルペジオを鳴らす
+        if (stepInBar === 1 || stepInBar === 4 || stepInBar === 8 || stepInBar === 10) {
+          const noteIndex = stepInBar % 4;
+          this.playStaccato(chord.notes[noteIndex], 0.04, time);
         }
-
-        // 2. タイトな4つ打ちキック ＆ 金属ハット
-        // 4つ打ちキック
-        if (stepInBar % 4 === 0) {
-          this.playKick(time, 0.11);
-        }
-        // 金属ハイハット
-        if (stepInBar % 2 === 0) {
-          const hatVol = (stepInBar % 4 === 2) ? 0.045 : 0.025;
-          this.playHats(time, hatVol);
-        }
-        if (stepInBar === 15) {
-          this.playHats(time, 0.02);
-          this.playHats(time + this.stepTime / 2, 0.015);
-        }
-
-        // 3. 緊迫メロディ（三角波による少し鋭く冷たいピコピコベル）
-        if (stepInBar === 0) {
-          this.playTensionMelody(chord.notes[0], 0.065, time, 0.22); // 8分
-        } else if (stepInBar === 2) {
-          this.playTensionMelody(chord.notes[1], 0.065, time, 0.22); // 8分
-        } else if (stepInBar === 4) {
-          this.playTensionMelody(chord.notes[2], 0.065, time, 0.45); // 4分
-        } else if (stepInBar === 8) {
-          this.playTensionMelody(chord.notes[3], 0.07, time, 0.45);  // 4分
-        } else if (stepInBar === 12) {
-          // 最後の拍は「8分 + 16分 + 16分」で不穏に駆け上がる
-          this.playTensionMelody(chord.notes[2], 0.06, time, 0.22);
-          this.playTensionMelody(chord.notes[1], 0.05, time + this.stepTime * 2, 0.11);
-          this.playTensionMelody(chord.notes[3], 0.045, time + this.stepTime * 3, 0.11);
-        }
-
-        // アレンジ：偶数小節のステップ10で、不協和な半音ゴースト音をピピッっと入れる
-        if (chordIndex % 2 === 1 && stepInBar === 10) {
-          this.playTensionMelody(chord.notes[3] * 1.06, 0.035, time, 0.15);
-        }
-
       } else {
-        // === 通常の謎解きBGM演奏モード ===
-        
-        // 1. 通常ベース（8分音符で適度に動くウォーキングベース）
-        if (stepInBar === 0) {
-          this.playSine(chord.root, 0.08, time, 0.04, 0.8);
-        } else if (stepInBar === 6) {
-          this.playSine(chord.notes[1], 0.05, time, 0.04, 0.4);
-        } else if (stepInBar === 8) {
-          this.playSine(chord.root, 0.07, time, 0.04, 0.6);
-        } else if (stepInBar === 14) {
-          const connectFreq = chord.notes[2];
-          this.playSine(connectFreq, 0.06, time, 0.04, 0.3);
-        }
-
-        // 2. 通常ドラム（Lo-Fi風の跳ねるキック ＆ ウッドブロック）
-        if (stepInBar === 0 || stepInBar === 8) {
-          this.playKick(time, 0.09);
-        } else if (stepInBar === 6 || stepInBar === 14) {
-          this.playKick(time, 0.045);
-        }
-
-        if (stepInBar === 4 || stepInBar === 12) {
-          this.playWoodBlock(time, 240, 0.06);
-        } else if (stepInBar === 15) {
-          this.playWoodBlock(time, 280, 0.025);
-          this.playWoodBlock(time + this.stepTime / 2, 260, 0.02);
-        }
-
-        // 3. 通常メロディ (8, 8, 4, 4, 4 リズム ＆ 装飾アレンジ)
-        const isLastBar = (chordIndex === 3);
-
-        if (stepInBar === 0) {
-          this.playMelody(chord.notes[0], 0.05, time, 0.4);
-        } else if (stepInBar === 2) {
-          this.playMelody(chord.notes[1], 0.05, time, 0.4);
-        } else if (stepInBar === 4) {
-          this.playMelody(chord.notes[2], 0.05, time, 0.8);
-        } else if (stepInBar === 8) {
-          this.playMelody(chord.notes[3], 0.05, time, 0.8);
-        } else if (stepInBar === 12) {
-          if (isLastBar) {
-            this.playMelody(chord.notes[1], 0.05, time, 0.4);
-            this.playMelody(chord.notes[2], 0.04, time + this.stepTime * 2, 0.2);
-            this.playMelody(chord.notes[3], 0.035, time + this.stepTime * 3, 0.2);
-          } else {
-            this.playMelody(chord.notes[1], 0.05, time, 0.8);
-          }
-        }
-
-        if (chordIndex === 1 && stepInBar === 10) {
-          this.playMelody(chord.notes[3] * 1.5, 0.02, time, 0.25);
+        // === 通常の謎解きモード（不思議な3連符ワルツ） ===
+        // ルート音は1拍目と3拍目の頭だけ
+        if (stepInBar === 0 || stepInBar === 6) {
+          this.playStaccato(chord.root, 0.05, time);
         }
         
-        if (chordIndex === 2 && stepInBar === 6) {
-          this.playMelody(chord.notes[2], 0.035, time, 0.3);
+        // アルペジオ（タ・タ・タ の 2, 3 番目）
+        if (stepInBar % 3 === 1) { // 各拍の2つ目
+          this.playStaccato(chord.notes[1], 0.03, time);
+        } else if (stepInBar % 3 === 2) { // 各拍の3つ目
+          this.playStaccato(chord.notes[2], 0.03, time);
+        }
+        
+        // メロディの装飾（小節の終わりにキラッとする音）
+        if (stepInBar === 11) {
+          this.playStaccato(chord.notes[3], 0.04, time);
         }
       }
     }
 
-    playSine(freq, volume, time, attack, release) {
+    // === 新生スタッカート（ワルツ）用メソッド ===
+    
+    // ポッという短く切れるスタッカート音（3連符用）
+    playStaccato(freq, volume, time) {
       const osc = this.ctx.createOscillator();
       const gainNode = this.ctx.createGain();
       
-      osc.type = 'sine';
+      osc.type = 'sine'; // 耳に響かないサイン波
       osc.frequency.value = freq;
       
       gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume, time + attack);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + attack + release);
+      gainNode.gain.linearRampToValueAtTime(volume, time + 0.015); // 極めて短いアタック
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.1); // すぐに消えるリリース
       
       osc.connect(gainNode);
       gainNode.connect(this.masterGain);
       
       osc.start(time);
-      osc.stop(time + attack + release + 0.1);
+      osc.stop(time + 0.15);
     }
 
-    // 緊迫ベース：のこぎり波 + 遮断周波数280Hzのレゾナンスローパスフィルター
-    playTensionBass(freq, volume, time) {
-      const osc = this.ctx.createOscillator();
-      const gainNode = this.ctx.createGain();
+    playPianoNote(freq, startTime, duration, vol, destinationNode) {
+      if (!this.ctx) return;
+      // 基音
+      const osc1 = this.ctx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.value = freq;
+      
+      // 第2倍音
+      const osc2 = this.ctx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.value = freq * 2;
+      
+      // 第3倍音 (アタック感と金属的な響き)
+      const osc3 = this.ctx.createOscillator();
+      osc3.type = 'triangle';
+      osc3.frequency.value = freq * 3;
+
+      // 音の丸みを作るローパスフィルター
       const filter = this.ctx.createBiquadFilter();
-      
-      osc.type = 'sawtooth';
-      osc.frequency.value = freq;
-      
       filter.type = 'lowpass';
-      filter.frequency.value = 280;
-      filter.Q.value = 5.0;
+      filter.frequency.setValueAtTime(freq * 4, startTime);
+      filter.frequency.exponentialRampToValueAtTime(freq, startTime + 0.3);
+
+      const g = this.ctx.createGain();
       
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume * 1.6, time + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.15);
+      // ピアノ特有のエンベロープ
+      g.gain.setValueAtTime(0, startTime);
+      g.gain.linearRampToValueAtTime(vol, startTime + 0.015);
+      g.gain.exponentialRampToValueAtTime(vol * 0.2, startTime + 0.2);
+      g.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
       
-      osc.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(this.masterGain);
+      osc1.connect(filter);
+      osc2.connect(filter);
+      osc3.connect(filter);
+      filter.connect(g);
+      g.connect(destinationNode);
       
-      osc.start(time);
-      osc.stop(time + 0.17);
+      osc1.start(startTime);
+      osc2.start(startTime);
+      osc3.start(startTime);
+      osc1.stop(startTime + duration + 0.1);
+      osc2.stop(startTime + duration + 0.1);
+      osc3.stop(startTime + duration + 0.1);
     }
 
-    playMelody(freq, volume, time, duration = 1.2) {
-      const osc = this.ctx.createOscillator();
-      const gainNode = this.ctx.createGain();
+    // 学校のピアノ風SE（探索ボタンなどで使用）
+    playPianoSE() {
+      this.init(); // BGM用のノードを含めてシステム全体を初期化する
+      if (!this.ctx) return;
       
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume, time + 0.15);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-      
-      osc.connect(gainNode);
-      gainNode.connect(this.masterGain);
-      gainNode.connect(this.delayNode);
-      
-      osc.start(time);
-      osc.stop(time + duration + 0.2);
-    }
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
 
-    // 緊迫メロディ：三角波 + ローパスフィルターによるデジタルシンセ音色
-    playTensionMelody(freq, volume, time, duration = 0.4) {
-      const osc = this.ctx.createOscillator();
-      const gainNode = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
+      const now = this.ctx.currentTime;
+      const seGain = this.ctx.createGain();
+      seGain.gain.setValueAtTime(0.01, now); // 音量をさらに半分に調整
       
-      osc.type = 'triangle';
-      osc.frequency.value = freq;
-      
-      filter.type = 'lowpass';
-      filter.frequency.value = 750;
-      
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume, time + 0.015);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + duration);
-      
-      osc.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(this.masterGain);
-      gainNode.connect(this.delayNode);
-      
-      osc.start(time);
-      osc.stop(time + duration + 0.1);
-    }
-
-    playKick(time, volume) {
-      const osc = this.ctx.createOscillator();
-      const gainNode = this.ctx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(100, time);
-      osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.2);
-      
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume, time + 0.008);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.2);
-      
-      osc.connect(gainNode);
-      gainNode.connect(this.masterGain);
-      
-      osc.start(time);
-      osc.stop(time + 0.22);
-    }
-
-    // 緊迫ハイハット：鋭い高周波ののこぎり波 + バンドパスフィルター
-    playHats(time, volume = 0.05) {
-      const osc = this.ctx.createOscillator();
-      const gainNode = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
-      
-      osc.type = 'sawtooth';
-      osc.frequency.value = 9500;
-      
-      filter.type = 'bandpass';
-      filter.frequency.value = 8500;
-      
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume, time + 0.002);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.025);
-      
-      osc.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(this.masterGain);
-      
-      osc.start(time);
-      osc.stop(time + 0.035);
-    }
-
-    playWoodBlock(time, freq = 240, volume = 0.06) {
-      const osc = this.ctx.createOscillator();
-      const gainNode = this.ctx.createGain();
-      
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(volume, time + 0.005);
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, time + 0.12);
-      
-      osc.connect(gainNode);
-      gainNode.connect(this.masterGain);
-      
+      // リバーブ感を出すための簡単なディレイ
+      const delay = this.ctx.createDelay();
+      delay.delayTime.value = 0.3;
       const delayGain = this.ctx.createGain();
-      delayGain.gain.value = 0.15;
-      gainNode.connect(delayGain);
-      delayGain.connect(this.delayNode);
+      delayGain.gain.value = 0.3;
+      
+      seGain.connect(this.ctx.destination);
+      seGain.connect(delay);
+      delay.connect(delayGain);
+      delayGain.connect(this.masterGain);
+      // delayGain.connect(this.delayNode); // BGMのエコー削除
 
-      osc.start(time);
-      osc.stop(time + 0.14);
+      // 不気味な3音のアルペジオ (A4 -> C5 -> E5) 「タ・タ・タン」
+      const notes = [
+        { freq: 440.00, timeOffset: 0.0, duration: 1.0 }, // 1音目
+        { freq: 523.25, timeOffset: 0.2, duration: 1.0 }, // 2音目
+        { freq: 659.25, timeOffset: 0.4, duration: 3.0 }  // 3音目（長く響かせる）
+      ];
+      
+      notes.forEach(note => {
+        this.playPianoNote(note.freq, now + note.timeOffset, note.duration, 1.0, seGain);
+      });
+    }
+
+    // 校舎選択のホバー時SE（西校舎は少し低め、東校舎は少し高めの音）
+    playHoverSE(type) {
+      this.init();
+      if (!this.ctx) return;
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
+
+      const now = this.ctx.currentTime;
+      const seGain = this.ctx.createGain();
+      seGain.gain.setValueAtTime(0.015, now); // 小さめの音量
+      seGain.connect(this.ctx.destination);
+
+      const freq = type === 'A' ? 349.23 : 440.00; // 西(A): F4, 東(B): A4
+      this.playPianoNote(freq, now, 0.5, 1.0, seGain);
     }
 
     // 正解効果音：ピンポン（高→さらに高い2音のサイン波）
@@ -1122,7 +1180,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!this.ctx) return;
       const now = this.ctx.currentTime;
       const se = this.ctx.createGain();
-      se.gain.setValueAtTime(0.45, now);
+      se.gain.setValueAtTime(0.22, now); // 半減した音量を維持
       se.connect(this.ctx.destination);
 
       // 1音目「ピン」(880Hz)
@@ -1153,7 +1211,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!this.ctx) return;
       const now = this.ctx.currentTime;
       const se = this.ctx.createGain();
-      se.gain.setValueAtTime(0.35, now);
+      se.gain.setValueAtTime(0.17, now);
       se.connect(this.ctx.destination);
 
       [0, 0.22].forEach(offset => {
@@ -1183,7 +1241,8 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleMute() {
       this.isMuted = !this.isMuted;
       if (this.masterGain) {
-        const targetVol = this.isMuted ? 0 : this.defaultVolume;
+        const baseVol = this.isTension ? this.defaultVolume * 0.66 : this.defaultVolume;
+        const targetVol = this.isMuted ? 0 : baseVol;
         this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.ctx.currentTime);
         this.masterGain.gain.linearRampToValueAtTime(targetVol, this.ctx.currentTime + 0.3);
       }
@@ -1195,31 +1254,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 全イベントリスナーの登録 ---
 
-  // タイトル画面のスタートボタンで画面遷移とBGM開始
+  // タイトル画面のスタートボタンで画面遷移とピアノSE
   btnStartGame.addEventListener('click', () => {
+    bgm.playPianoSE();
     switchScreen(titleScreen, selectionScreen);
-    bgm.start();
   });
 
-  // キャラクター選択イベント（画面遷移、初期化、BGM開始とモード設定）
+  // キャラクター選択イベント（ホバー音とクリック画面遷移）
+  routePlayerA.addEventListener('mouseenter', () => {
+    bgm.playHoverSE('A');
+  });
+  
   routePlayerA.addEventListener('click', () => {
+    bgm.playPianoSE();
     switchScreen(selectionScreen, playerAScreen);
-    unlockedFloorA = 3;
-    currentRoomA = '3-1';
+    unlockedFloorA = 4;
+    currentRoomA = 'rooftop';
     renderMap();
-    updateRoomUI('a', roomsWest['3-1'], '3-1');
+    updateRoomUI('a', roomsWest['rooftop'], 'rooftop');
     
     bgm.start();
     if (unlockedFloorA === 0) bgm.switchToTensionMode();
     else bgm.switchToNormalMode();
   });
 
+  routePlayerB.addEventListener('mouseenter', () => {
+    bgm.playHoverSE('B');
+  });
+
   routePlayerB.addEventListener('click', () => {
+    bgm.playPianoSE();
     switchScreen(selectionScreen, playerBScreen);
-    unlockedFloorB = 3;
-    currentRoomB = 'music';
+    unlockedFloorB = 4;
+    currentRoomB = 'rooftop';
     renderMap();
-    updateRoomUI('b', roomsEast['music'], 'music');
+    updateRoomUI('b', roomsEast['rooftop'], 'rooftop');
 
     bgm.start();
     if (unlockedFloorB === 0) bgm.switchToTensionMode();

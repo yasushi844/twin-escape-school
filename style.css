@@ -63,6 +63,16 @@ body {
   overflow: hidden; /* 画面全体のスクロールを完全に禁止し1画面固定にする */
 }
 
+/* 即時切り替え用のアニメーション（軽く暗転する程度） */
+.bg-instant-transition {
+  animation: room-switch-darken 0.4s ease-out forwards;
+}
+
+@keyframes room-switch-darken {
+  0% { filter: brightness(0.4); }
+  100% { filter: brightness(1); }
+}
+
 .screen.active {
   opacity: 1;
   visibility: visible;
@@ -1819,5 +1829,277 @@ body {
   .game-clear-text {
     font-size: 3rem;
     letter-spacing: 0.4rem;
+  }
+}
+
+/* =========================================
+   正解エフェクト (CORRECT)
+   ========================================= */
+.correct-effect-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85); /* 全体を少し暗くする */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* カスタムアラート(1000)より前面 */
+  opacity: 0;
+  animation: correctOverlayFadeIn 0.3s ease-out forwards;
+  pointer-events: none; /* クリックを阻害しない */
+}
+
+/* フェードアウト用クラス */
+.correct-effect-overlay.fade-out {
+  animation: correctOverlayFadeOut 0.25s ease-in forwards;
+}
+
+.correct-effect-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.correct-effect-text {
+  font-family: var(--font-title);
+  font-size: 6rem;
+  font-weight: bold;
+  letter-spacing: 0.8rem;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: correctTextPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  z-index: 2;
+}
+
+.correct-effect-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 4px solid #fff;
+  opacity: 0;
+  animation: correctRingExpand 0.5s ease-out forwards;
+  z-index: 1;
+}
+
+/* 西校舎用テーマカラー（青・シアン系：Player A） */
+.correct-effect-overlay.theme-a .correct-effect-text {
+  color: #00f2fe;
+  text-shadow: 0 0 20px rgba(0, 242, 254, 0.8), 0 0 40px rgba(0, 150, 255, 0.6);
+}
+.correct-effect-overlay.theme-a .correct-effect-ring {
+  border-color: rgba(0, 242, 254, 0.8);
+  box-shadow: 0 0 30px rgba(0, 150, 255, 0.6), inset 0 0 20px rgba(0, 150, 255, 0.4);
+}
+
+/* 東校舎用テーマカラー（緑・ネオン系：Player B） */
+.correct-effect-overlay.theme-b .correct-effect-text {
+  color: #39ff14;
+  text-shadow: 0 0 20px rgba(57, 255, 20, 0.8), 0 0 40px rgba(0, 200, 0, 0.6);
+}
+.correct-effect-overlay.theme-b .correct-effect-ring {
+  border-color: rgba(57, 255, 20, 0.8);
+  box-shadow: 0 0 30px rgba(0, 200, 0, 0.6), inset 0 0 20px rgba(0, 200, 0, 0.4);
+}
+
+/* 最終問題・共通テーマ（白・金系） */
+.correct-effect-overlay.theme-gate .correct-effect-text {
+  color: #fff4a3;
+  text-shadow: 0 0 20px rgba(255, 230, 100, 0.8), 0 0 40px rgba(255, 200, 50, 0.6);
+}
+.correct-effect-overlay.theme-gate .correct-effect-ring {
+  border-color: rgba(255, 230, 100, 0.8);
+  box-shadow: 0 0 30px rgba(255, 200, 50, 0.6), inset 0 0 20px rgba(255, 200, 50, 0.4);
+}
+
+/* アニメーション定義 */
+@keyframes correctOverlayFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes correctOverlayFadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes correctTextPop {
+  0% { opacity: 0; transform: scale(0.5); }
+  60% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes correctRingExpand {
+  0% { width: 10px; height: 10px; opacity: 1; border-width: 10px; }
+  100% { width: 120vw; height: 120vw; opacity: 0; border-width: 1px; }
+}
+
+@media (max-width: 768px) {
+  .correct-effect-text {
+    font-size: 3.5rem;
+    letter-spacing: 0.4rem;
+  }
+}
+
+/* =========================================
+   解錠エフェクト (UNLOCK)
+   ========================================= */
+.unlock-effect-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  animation: unlockOverlayFadeIn 0.3s ease-out forwards;
+  pointer-events: none;
+}
+
+.unlock-effect-overlay.fade-out {
+  animation: unlockOverlayFadeOut 0.25s ease-in forwards;
+}
+
+/* 錠前アイコンの枠 */
+.unlock-icon-container {
+  position: relative;
+  width: 100px;
+  height: 140px;
+  margin-bottom: 2rem;
+  animation: lockShake 0.5s ease-in-out forwards;
+}
+
+/* 錠前の本体（四角） */
+.unlock-icon-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 80px;
+  background: #fff;
+  border-radius: 12px;
+  z-index: 2;
+  box-shadow: inset 0 -5px 15px rgba(0,0,0,0.3);
+}
+
+
+
+.unlock-icon-body::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 30px;
+  background: rgba(0,0,0,0.8);
+  border-radius: 10px 10px 0 0;
+}
+
+/* 錠前のツル（U字部分） */
+.unlock-icon-shackle {
+  position: absolute;
+  top: 0;
+  left: 15px;
+  width: 70px;
+  height: 80px;
+  border: 15px solid #fff;
+  border-bottom: none;
+  border-radius: 35px 35px 0 0;
+  box-sizing: border-box;
+  z-index: 1;
+  transform-origin: left bottom;
+  /* 0.5秒後に上にスライドしつつ左に回転して開く */
+  animation: shackleOpen 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards;
+}
+
+.unlock-text {
+  font-family: var(--font-title);
+  font-size: 6rem;
+  font-weight: bold;
+  letter-spacing: 1rem;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.5);
+  /* 0.5秒後にドーンと表示される */
+  animation: unlockTextPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.5s forwards;
+}
+
+/* 西校舎用（青・シアン系：Player A） */
+.unlock-effect-overlay.theme-a .unlock-text {
+  color: #00f2fe;
+  text-shadow: 0 0 20px rgba(0, 242, 254, 0.8), 0 0 40px rgba(0, 150, 255, 0.6);
+}
+.unlock-effect-overlay.theme-a .unlock-icon-body {
+  box-shadow: 0 0 40px rgba(0, 242, 254, 0.5), inset 0 -5px 15px rgba(0,0,0,0.3);
+}
+
+/* 東校舎用（緑・ネオン系：Player B） */
+.unlock-effect-overlay.theme-b .unlock-text {
+  color: #39ff14;
+  text-shadow: 0 0 20px rgba(57, 255, 20, 0.8), 0 0 40px rgba(0, 200, 0, 0.6);
+}
+.unlock-effect-overlay.theme-b .unlock-icon-body {
+  box-shadow: 0 0 40px rgba(57, 255, 20, 0.5), inset 0 -5px 15px rgba(0,0,0,0.3);
+}
+
+/* 正門・共通用（金系） */
+.unlock-effect-overlay.theme-gate .unlock-text {
+  color: #fff4a3;
+  text-shadow: 0 0 20px rgba(255, 230, 100, 0.8), 0 0 40px rgba(255, 200, 50, 0.6);
+}
+.unlock-effect-overlay.theme-gate .unlock-icon-body {
+  box-shadow: 0 0 40px rgba(255, 200, 50, 0.5), inset 0 -5px 15px rgba(0,0,0,0.3);
+}
+
+@keyframes unlockOverlayFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes unlockOverlayFadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes lockShake {
+  0% { transform: rotate(0deg) scale(1); }
+  10% { transform: rotate(-10deg) scale(1.1); }
+  20% { transform: rotate(10deg) scale(1.1); }
+  30% { transform: rotate(-10deg) scale(1.1); }
+  40% { transform: rotate(10deg) scale(1.1); }
+  50% { transform: rotate(-10deg) scale(1.1); }
+  60% { transform: rotate(10deg) scale(1.1); }
+  70% { transform: rotate(-10deg) scale(1.1); }
+  80% { transform: rotate(10deg) scale(1.1); }
+  90% { transform: rotate(0deg) scale(1.15); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes shackleOpen {
+  0% { transform: translateY(0) rotate(0deg); }
+  40% { transform: translateY(-30px) rotate(0deg); }
+  100% { transform: translateY(-30px) rotate(-45deg); }
+}
+
+@keyframes unlockTextPop {
+  0% { opacity: 0; transform: scale(0.5); }
+  60% { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+  .unlock-text {
+    font-size: 3.5rem;
+    letter-spacing: 0.5rem;
   }
 }

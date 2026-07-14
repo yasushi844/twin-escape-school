@@ -83,8 +83,11 @@
         <div class="map-container map-west" id="map-west">
           <div class="map-header">西校舎マップ (普通教室棟)</div>
           <div class="map-grid">
+            <!-- RF (屋上) -->
+            <button class="map-cell active-room" data-room="rooftop" data-num="R01" style="grid-column: span 3;">屋上</button>
+            <button class="map-cell" data-room="stairs-rf" data-num="R02"><span>階段</span></button>
             <!-- 3F -->
-            <button class="map-cell active-room" data-room="3-1" data-num="301">3-1</button>
+            <button class="map-cell" data-room="3-1" data-num="301">3-1</button>
             <button class="map-cell" data-room="3-2" data-num="302">3-2</button>
             <button class="map-cell" data-room="3-3" data-num="303">3-3</button>
             <button class="map-cell" data-room="stairs-3f" data-num="304"><span>階段</span></button>
@@ -191,11 +194,14 @@
         <div class="map-container map-east" id="map-east">
           <div class="map-header">東校舎マップ (特別実習棟)</div>
           <div class="map-grid">
+            <!-- RF (屋上) -->
+            <button class="map-cell" data-room="stairs-rf" data-num="R08"><span>階段</span></button>
+            <button class="map-cell active-room" data-room="rooftop" data-num="R07" style="grid-column: span 3;">屋上</button>
             <!-- 3F (左から: 階段 ➔ 準備室 ➔ 美術室 ➔ 音楽室) -->
             <button class="map-cell" data-room="stairs-3f" data-num="308"><span>階段</span></button>
             <button class="map-cell" data-room="prep" data-num="307">準備室</button>
             <button class="map-cell" data-room="art" data-num="306">美術室</button>
-            <button class="map-cell active-room" data-room="music" data-num="305">音楽室</button>
+            <button class="map-cell" data-room="music" data-num="305">音楽室</button>
             <!-- 2F (左から: 階段 ➔ 会議室 ➔ 家庭科 ➔ 理科室) -->
             <button class="map-cell" data-room="stairs-2f" data-num="208"><span>階段</span></button>
             <button class="map-cell" data-room="meeting" data-num="207">会議室</button>
