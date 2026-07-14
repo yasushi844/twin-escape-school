@@ -597,6 +597,8 @@ document.addEventListener('DOMContentLoaded', () => {
         nextBg = "url('assets/bg_stairs.png')";
       } else if (roomKey === 'entrance' || roomKey === 'janitor') {
         nextBg = "url('assets/bg_firedoor.png')";
+      } else if (roomKey === 'rooftop') {
+        nextBg = "url('assets/bg_rooftop.png')";
       } else {
         nextBg = player === 'a' ? "url('assets/bg_classroom.png')" : "url('assets/bg_science.png')";
       }
@@ -886,7 +888,7 @@ document.addEventListener('DOMContentLoaded', () => {
       this.nextNoteTime = 0.0;
       this.timerId = null;
       this.oscillators = [];
-      this.defaultVolume = 0.53; // 音量を従来の0.8から約2/3に下げる
+      this.defaultVolume = 1.06; // 音量を従来の0.53から2倍に変更
       
       // 通常時 (C - G - Am - F) 中音域へシフト
       this.normalChords = [
